@@ -123,7 +123,7 @@ def change_dataobject(splitted_dataobject, new_negs):
 ####################################################
 ####################################################
 
-dataset = 'biosnap'.lower() # indicate here the dataset
+dataset = 'drugbank'.lower() # indicate here the dataset
 
 print(dataset)
 
@@ -135,7 +135,7 @@ hd = 17 # hidden dimensions
 device = 'cuda'
 
 
-PATH_VAL = 'Results/inferring_dtis/' # path for validation files
+PATH_VAL = 'Results/inferring_drugbank/' # path for validation files
 
 ####################################################
 ####################################################
@@ -228,7 +228,7 @@ criterion = torch.nn.BCEWithLogitsLoss()
 
 early_stopper = EarlyStopper(tolerance=10, min_delta=0.05)
 
-for epoch in range(1_000): 
+for epoch in range(1000): 
     loss = train(train_data)
     train_auc, _, _, train_loss, train_aupr = test(train_data)
     val_auc, _, _, val_loss, val_aupr = test(val_data)

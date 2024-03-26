@@ -147,6 +147,8 @@ def main():
 
     # Generate Object
     data = HeteroData()
+    data['drug'].node_id = torch.arange(len(list(set(src))))
+    data['protein'].node_id = torch.arange(len(list(set(dst))))
     data['drug'].x = drug_x
     data['protein'].x = protein_x 
     data['drug', 'interaction', 'protein'].edge_index = edge_index

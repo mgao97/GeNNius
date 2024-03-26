@@ -6,7 +6,7 @@ import time
 
 import torch
 import torch_geometric.transforms as T
-from sklearn.metrics import roc_auc_score, average_precision_score
+from sklearn.metrics import roc_auc_score, average_precision_score, accuracy_score
 
 from GeNNius import Model, EarlyStopper, shuffle_label_data
 from utils import plot_auc
@@ -24,7 +24,7 @@ def main():
                         "verbose logging). CRITICAL=0, ERROR=1, WARN=2, INFO=3, "
                         "DEBUG=4")
     parser.add_argument("-d", "--database", help="database: e, nr, ic, gpcr, drugbank", type=str)
-    parser.add_argument("-e", "--hidden", default=17,help="specify dimension of embedding", type=int)
+    parser.add_argument("-e", "--hidden", default=64,help="specify dimension of embedding", type=int)
 
     args = parser.parse_args()
     log_levels = {
@@ -73,12 +73,14 @@ def main():
 
         # auroc
         out = pred.view(-1).sigmoid()
+        pred = (out >= 0.5).long()
 
         # calculate metrics
         auc = roc_auc_score(target.cpu().numpy(), out.detach().cpu().numpy())
+        acc = accuracy_score(target.cpu().numpy(), pred.detach().cpu().numpy())
         aupr = average_precision_score(target.cpu().numpy(), out.detach().cpu().numpy())
 
-        return round(auc, 6), emb, out, loss.cpu().numpy(), aupr
+        return round(auc, 6), acc, emb, out, loss.cpu().numpy(), aupr
 
     #########
 
@@ -109,12 +111,15 @@ def main():
     # Remove "reverse" label.
     del data['protein', 'rev_interaction', 'drug'].edge_label  
     
+    import random
+    random.seed(42)
+
     split = T.RandomLinkSplit(
         num_val= 0.1,
         num_test= 0.2, 
         is_undirected= True,
         add_negative_train_samples= True, # False for: Not adding negative links to train
-        neg_sampling_ratio= 1.0, # ratio of negative sampling is 0
+        neg_sampling_ratio= 2.0, # ratio of negative sampling is 0
         disjoint_train_ratio = 0.2, #
         edge_types=[('drug', 'interaction', 'protein')],
         rev_edge_types=[('protein', 'rev_interaction', 'drug')],
@@ -122,6 +127,8 @@ def main():
     )
 
     train_data, val_data, test_data = split(data)
+    print('data',data)
+    print('train_data',train_data)
 
     logging.debug(f"Number of nodes\ntrain: {train_data.num_nodes}\ntest: {test_data.num_nodes}\nval: {val_data.num_nodes}")
     logging.debug(f"Number of edges (label)\ntrain: {train_data['drug', 'protein'].edge_label.size()}")
@@ -134,8 +141,10 @@ def main():
     logging.info(f'hidden channels: {hidden_channels}')
 
     model = Model(hidden_channels=hidden_channels, data=data).to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.05)
     criterion = torch.nn.BCEWithLogitsLoss()
+
+    print('model:',model)
 
     early_stopper = EarlyStopper(tolerance=10, min_delta=0.05) 
 
@@ -144,16 +153,17 @@ def main():
         model.encoder(train_data.x_dict, train_data.edge_index_dict)
 
     results_auc = [[],[],[]]
+    results_acc = [[],[],[]]
     results_aupr = [[],[],[]]
     loss_list = [[], [], []]
 
     init_time = time.time()
 
-    for epoch in range(1_000): 
+    for epoch in range(1,1001): 
         loss = train(train_data)
-        train_auc, _, _, train_loss, train_aupr = test(train_data)
-        val_auc, _, _, val_loss, val_aupr = test(val_data)
-        test_auc, emb, _, test_loss, test_aupr= test(test_data)
+        train_auc,train_acc, _, _, train_loss, train_aupr = test(train_data)
+        val_auc, val_acc, _, _, val_loss, val_aupr = test(val_data)
+        test_auc, test_acc, emb, _, test_loss, test_aupr= test(test_data)
         if epoch%50 == 0:
             print(f'Epoch: {epoch:03d}, Loss: {loss:.4f}, Train: {train_auc:.4f}, '
                     f'Val: {val_auc:.4f}, Test: {test_auc:.4f}')
@@ -162,6 +172,11 @@ def main():
         results_auc[0].append(train_auc)
         results_auc[1].append(val_auc)
         results_auc[2].append(test_auc)
+
+         # list with AUC results
+        results_acc[0].append(train_acc)
+        results_acc[1].append(val_acc)
+        results_acc[2].append(test_acc)
 
         # list with AUPR results
         results_aupr[0].append(train_aupr)
@@ -181,6 +196,7 @@ def main():
 
     print(" ")
     print(f"Final AUC Train: {train_auc:.4f}, AUC Val {val_auc:.4f},AUC Test: {test_auc:.4f}")
+    print(f"Final ACC Train: {train_acc:.4f}, ACC Val {val_acc:.4f},ACC Test: {test_acc:.4f}")
     print(f"Final AUPR Train: {train_aupr:.4f}, AUC Val {val_aupr:.4f},AUC Test: {test_aupr:.4f}")
     print(f"Elapsed time {(end_time-init_time)/60:.4f} min")
 

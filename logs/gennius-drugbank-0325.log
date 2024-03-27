@@ -1,0 +1,34 @@
+[INFO] hidden channels: 17]
+Dataset:  drugbank
+reading from Data/DRUGBANK/hetero_data_drugbank.pt
+hd:  17
+cuda
+Data is cuda?: True
+Epoch: 000, Loss: 0.6856, Train: 0.8620, Val: 0.8597, Test: 0.8683
+Epoch: 050, Loss: 0.3955, Train: 0.9064, Val: 0.9145, Test: 0.9208
+Epoch: 100, Loss: 0.3913, Train: 0.9131, Val: 0.9188, Test: 0.9234
+Epoch: 150, Loss: 0.3665, Train: 0.9201, Val: 0.9223, Test: 0.9290
+Epoch: 200, Loss: 0.3632, Train: 0.9230, Val: 0.9242, Test: 0.9313
+Epoch: 250, Loss: 0.3593, Train: 0.9239, Val: 0.9261, Test: 0.9331
+Epoch: 300, Loss: 0.3508, Train: 0.9263, Val: 0.9271, Test: 0.9337
+Epoch: 350, Loss: 0.3683, Train: 0.9213, Val: 0.9249, Test: 0.9313
+Epoch: 400, Loss: 0.3578, Train: 0.9253, Val: 0.9272, Test: 0.9338
+Epoch: 450, Loss: 0.3565, Train: 0.9282, Val: 0.9284, Test: 0.9345
+Epoch: 500, Loss: 0.3492, Train: 0.9305, Val: 0.9290, Test: 0.9331
+Epoch: 550, Loss: 0.3417, Train: 0.9340, Val: 0.9276, Test: 0.9325
+Epoch: 600, Loss: 0.3374, Train: 0.9366, Val: 0.9288, Test: 0.9317
+Epoch: 650, Loss: 0.3372, Train: 0.9383, Val: 0.9313, Test: 0.9363
+Epoch: 700, Loss: 0.3337, Train: 0.9405, Val: 0.9312, Test: 0.9359
+Epoch: 750, Loss: 0.3343, Train: 0.9397, Val: 0.9328, Test: 0.9373
+Epoch: 800, Loss: 0.3269, Train: 0.9434, Val: 0.9316, Test: 0.9329
+Epoch: 850, Loss: 0.3234, Train: 0.9441, Val: 0.9338, Test: 0.9379
+Epoch: 900, Loss: 0.3144, Train: 0.9465, Val: 0.9332, Test: 0.9353
+Epoch: 950, Loss: 0.3275, Train: 0.9447, Val: 0.9318, Test: 0.9353
+early stopped at epoch  998
+ 
+Final AUC Train: 0.9479, AUC Val 0.9323,AUC Test: 0.9360
+Final AUPR Train: 0.9518, AUC Val 0.9342,AUC Test: 0.9384
+Elapsed time 0.5722 min
+plotting loss over epochs
+plotting loss over epochs
+plotting loss over epochs

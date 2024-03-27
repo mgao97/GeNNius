@@ -1,0 +1,90 @@
+[INFO] hidden channels: 64]
+Dataset:  drugbank
+reading from Data/DRUGBANK/hetero_data_drugbank.pt
+hd:  64
+cuda
+Data is cuda?: True
+data HeteroData(
+  drug={
+    node_id=[6823],
+    x=[6823, 12],
+  },
+  protein={
+    node_id=[4650],
+    x=[4650, 20],
+  },
+  (drug, interaction, protein)={ edge_index=[2, 23705] },
+  (protein, rev_interaction, drug)={ edge_index=[2, 23705] }
+)
+train_data HeteroData(
+  drug={
+    node_id=[6823],
+    x=[6823, 12],
+  },
+  protein={
+    node_id=[4650],
+    x=[4650, 20],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 13276],
+    edge_label=[9954],
+    edge_label_index=[2, 9954],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 13276] }
+)
+model: Model(
+  (encoder): GraphModule(
+    (conv_in): ModuleDict(
+      (drug__interaction__protein): SAGEConv((-1, -1), 64, aggr=sum)
+      (protein__rev_interaction__drug): SAGEConv((-1, -1), 64, aggr=sum)
+    )
+    (act): ModuleDict(
+      (drug): Tanh()
+      (protein): Tanh()
+    )
+    (dropout): ModuleDict(
+      (drug): Dropout(p=0.2, inplace=False)
+      (protein): Dropout(p=0.2, inplace=False)
+    )
+    (conv_med): ModuleDict(
+      (drug__interaction__protein): SAGEConv((-1, -1), 64, aggr=sum)
+      (protein__rev_interaction__drug): SAGEConv((-1, -1), 64, aggr=sum)
+    )
+    (conv_out): ModuleDict(
+      (drug__interaction__protein): SAGEConv((-1, -1), 64, aggr=sum)
+      (protein__rev_interaction__drug): SAGEConv((-1, -1), 64, aggr=sum)
+    )
+  )
+  (decoder): EdgeClassifier(
+    (lin1): Linear(in_features=128, out_features=64, bias=True)
+    (lin2): Linear(in_features=64, out_features=1, bias=True)
+  )
+)
+Epoch: 050, Loss: 0.6102, Train: 0.7842, Val: 0.8144, Test: 0.8216
+Epoch: 100, Loss: 0.4345, Train: 0.8776, Val: 0.8802, Test: 0.8770
+Epoch: 150, Loss: 0.3976, Train: 0.8886, Val: 0.8942, Test: 0.8932
+Epoch: 200, Loss: 0.3880, Train: 0.8939, Val: 0.9005, Test: 0.9022
+Epoch: 250, Loss: 0.3840, Train: 0.8955, Val: 0.9037, Test: 0.9059
+Epoch: 300, Loss: 0.3793, Train: 0.8975, Val: 0.9065, Test: 0.9083
+Epoch: 350, Loss: 0.3808, Train: 0.8991, Val: 0.9081, Test: 0.9111
+Epoch: 400, Loss: 0.3755, Train: 0.8997, Val: 0.9078, Test: 0.9104
+Epoch: 450, Loss: 0.3753, Train: 0.8993, Val: 0.9067, Test: 0.9084
+Epoch: 500, Loss: 0.3725, Train: 0.9012, Val: 0.9085, Test: 0.9111
+Epoch: 550, Loss: 0.3831, Train: 0.9018, Val: 0.9095, Test: 0.9133
+Epoch: 600, Loss: 0.3722, Train: 0.9021, Val: 0.9085, Test: 0.9117
+Epoch: 650, Loss: 0.3702, Train: 0.9031, Val: 0.9094, Test: 0.9129
+Epoch: 700, Loss: 0.3701, Train: 0.9033, Val: 0.9088, Test: 0.9123
+Epoch: 750, Loss: 0.3795, Train: 0.9030, Val: 0.9078, Test: 0.9109
+Epoch: 800, Loss: 0.3725, Train: 0.9033, Val: 0.9083, Test: 0.9120
+Epoch: 850, Loss: 0.3678, Train: 0.9032, Val: 0.9084, Test: 0.9115
+Epoch: 900, Loss: 0.3673, Train: 0.9043, Val: 0.9099, Test: 0.9136
+Epoch: 950, Loss: 0.3676, Train: 0.9043, Val: 0.9097, Test: 0.9127
+Epoch: 1000, Loss: 0.3708, Train: 0.9041, Val: 0.9086, Test: 0.9125
+ 
+Final AUC Train: 0.9041, AUC Val 0.9086,AUC Test: 0.9125
+Final ACC Train: 0.8522, AUC Val 0.8488,AUC Test: 0.8471
+Final AUPR Train: 0.8324, AUC Val 0.8309,AUC Test: 0.8270
+Elapsed time 0.3191 min
+plotting loss over epochs
+plotting loss over epochs
+plotting loss over epochs

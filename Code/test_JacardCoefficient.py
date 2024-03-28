@@ -108,7 +108,7 @@ def data_divide(data):
     edge_label_index_dict = {('drug','interaction','protein'): data[('drug','interaction','protein')].edge_label_index.to(device) }
 
     # 预先提取边的索引
-    edge_indices = edge_label_index_dict[('drug','interaction','protein')]
+    edge_indices = edge_label_index_dict[('drug','interaction','protein')].t()
 
     
     print('labels:',labels.shape)
@@ -133,7 +133,8 @@ def transform_list(b, a):
     
     # 如果第二个列表的长度小于第一个列表中最大值的索引+1，则增加列表的长度
     while len(b) < max_value:
-        b.append(max(b) + 1)
+        for i in range(1,len(b)+1):
+            b.append(max_value+i)
     
     return b
 
@@ -153,7 +154,8 @@ def hetero_data_to_nx_graph(pyg_data):
     # 添加节点和边
     drug_nodes = pyg_data['drug'].node_id.cpu().tolist()
     protein_nodes = pyg_data['protein'].node_id.cpu().tolist()
-    protein_nodes = transform_list(protein_nodes, drug_nodes)
+    protein_nodes = transform_list(drug_nodes,protein_nodes)
+    print('drug_nodes:',drug_nodes,'protein_nodes:',protein_nodes)
     edges = pyg_data['drug', 'interaction', 'protein'].edge_index.t().cpu().tolist()
 
     G.add_nodes_from(drug_nodes, node_type='drug')
@@ -169,38 +171,31 @@ def hetero_data_to_nx_graph(pyg_data):
 
     return G
 
-# 使用示例
-# train_g = hetero_data_to_nx_graph(train_data)
-# test_g = hetero_data_to_nx_graph(test_data)
-# print(nx.info(train_g), nx.info(test_g))
 g = hetero_data_to_nx_graph(data)
 print('graph info:', len(g.nodes()), len(g.edges()))
-
-# print(train_edge_idx_list)
-
 
 acc_list,auc_list,pre_list = [],[],[]
 run_time = 10
 
 for i in range(run_time):
     test_preds = []
-    for j in range(len(train_edge_idx_list)):
-        preds = nx.jaccard_coefficient(g,[tuple(train_edge_idx_list[j][0]),tuple(train_edge_idx_list[j][1])])
+    for j in range(len(test_edge_idx_list)):
+        preds = nx.jaccard_coefficient(g,[tuple(test_edge_idx_list[j])])
         for u,v,p in preds:
             test_preds.append(p)
     
     print(test_preds,len(test_preds))
+
     # 计算AUC
-    y_pred_binary = int(test_preds)
-    auc = roc_auc_score(test_y, y_pred_binary)
+    auc = roc_auc_score(test_y, test_preds)
     auc_list.append(auc)
 
     # 计算Precision
-    precision = precision_score(test_y, y_pred_binary)
+    precision = precision_score(test_y, [1 if pred >= 0.5 else 0 for pred in test_preds])
     pre_list.append(precision)
 
     # 计算Accuracy
-    accuracy = accuracy_score(test_y, y_pred_binary)
+    accuracy = accuracy_score(test_y, [1 if pred >= 0.5 else 0 for pred in test_preds])
     acc_list.append(accuracy)
 
 

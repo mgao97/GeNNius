@@ -1,0 +1,98 @@
+====================================================================================================
+data: HeteroData(
+  drug={
+    node_id=[59],
+    x=[59, 12],
+  },
+  protein={
+    node_id=[199],
+    x=[199, 20],
+  },
+  (drug, interaction, protein)={ edge_index=[2, 620] },
+  (protein, rev_interaction, drug)={ edge_index=[2, 620] }
+)
+====================================================================================================
+****************************************************************************************************
+train data: HeteroData(
+  drug={
+    node_id=[59],
+    x=[59, 12],
+  },
+  protein={
+    node_id=[199],
+    x=[199, 20],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 348],
+    edge_label=[258],
+    edge_label_index=[2, 258],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 348] }
+)
+****************************************************************************************************
+val data: HeteroData(
+  drug={
+    node_id=[59],
+    x=[59, 12],
+  },
+  protein={
+    node_id=[199],
+    x=[199, 20],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 434],
+    edge_label=[186],
+    edge_label_index=[2, 186],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 434] }
+)
+****************************************************************************************************
+test data: HeteroData(
+  drug={
+    node_id=[59],
+    x=[59, 12],
+  },
+  protein={
+    node_id=[199],
+    x=[199, 20],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 496],
+    edge_label=[372],
+    edge_label_index=[2, 372],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 496] }
+)
+****************************************************************************************************
+model: GAT(
+  (lin_dict): ModuleDict(
+    (drug): Linear(-1, 64, bias=True)
+    (protein): Linear(-1, 64, bias=True)
+  )
+  (conv1): GATConv((-1, -1), 64, heads=1)
+  (lin1): Linear(-1, 64, bias=True)
+  (conv2): GATConv((-1, -1), 1, heads=1)
+  (lin2): Linear(-1, 1, bias=True)
+  (lin): Linear(2, 1, bias=True)
+)
+Epoch: 51, Loss: 0.2589
+Epoch: 101, Loss: 0.1978
+Epoch: 151, Loss: 0.1841
+Epoch: 201, Loss: 0.2246
+Epoch: 251, Loss: 0.1396
+Epoch: 301, Loss: 0.1605
+Epoch: 351, Loss: 0.1193
+Epoch: 401, Loss: 0.1271
+Epoch: 451, Loss: 0.1272
+Epoch: 501, Loss: 0.1136
+Epoch: 551, Loss: 0.2939
+Epoch: 601, Loss: 0.2143
+Epoch: 651, Loss: 0.1276
+Epoch: 701, Loss: 0.1176
+Epoch: 751, Loss: 0.1064
+Epoch: 801, Loss: 0.1352
+Epoch: 851, Loss: 0.1065
+Epoch: 901, Loss: 0.0980
+Epoch: 951, Loss: 0.6511
+Epoch: 1001, Loss: 0.2004
+avg Test Accuracy: 0.6505  avg Test AUC: 0.5673  avg Test AUC: 0.4273

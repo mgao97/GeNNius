@@ -1,0 +1,63 @@
+[INFO] hidden channels: 64]
+Dataset:  bindingdb
+reading from Data/BINDINGDB/hetero_data_bindingdb.pt
+hd:  64
+cuda
+Data is cuda?: True
+data HeteroData(
+  drug={ x=[3084, 12] },
+  protein={ x=[718, 20] },
+  (drug, interaction, protein)={ edge_index=[2, 5937] },
+  (protein, rev_interaction, drug)={ edge_index=[2, 5937] }
+)
+train_data HeteroData(
+  drug={ x=[3084, 12] },
+  protein={ x=[718, 20] },
+  (drug, interaction, protein)={
+    edge_index=[2, 3326],
+    edge_label=[2493],
+    edge_label_index=[2, 2493],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 3326] }
+)
+model: Model(
+  (encoder): GraphModule(
+    (conv_in): ModuleDict(
+      (drug__interaction__protein): SAGEConv((-1, -1), 64, aggr=sum)
+      (protein__rev_interaction__drug): SAGEConv((-1, -1), 64, aggr=sum)
+    )
+    (act): ModuleDict(
+      (drug): Tanh()
+      (protein): Tanh()
+    )
+    (dropout): ModuleDict(
+      (drug): Dropout(p=0.2, inplace=False)
+      (protein): Dropout(p=0.2, inplace=False)
+    )
+    (conv_med): ModuleDict(
+      (drug__interaction__protein): SAGEConv((-1, -1), 64, aggr=sum)
+      (protein__rev_interaction__drug): SAGEConv((-1, -1), 64, aggr=sum)
+    )
+    (conv_out): ModuleDict(
+      (drug__interaction__protein): SAGEConv((-1, -1), 64, aggr=sum)
+      (protein__rev_interaction__drug): SAGEConv((-1, -1), 64, aggr=sum)
+    )
+  )
+  (decoder): EdgeClassifier(
+    (lin1): Linear(in_features=128, out_features=64, bias=True)
+    (lin2): Linear(in_features=64, out_features=1, bias=True)
+  )
+)
+Epoch: 050, Loss: 0.6139, Train: 0.7116, Val: 0.6791, Test: 0.6598
+Epoch: 100, Loss: 0.4668, Train: 0.8027, Val: 0.8239, Test: 0.8272
+Epoch: 150, Loss: 0.4393, Train: 0.8540, Val: 0.8412, Test: 0.8413
+Epoch: 200, Loss: 0.4233, Train: 0.8599, Val: 0.8510, Test: 0.8497
+early stopped at epoch  239
+ 
+Final AUC Train: 0.8116, AUC Val 0.7933,AUC Test: 0.7864
+Final ACC Train: 0.6298, ACC Val 0.5795,ACC Test: 0.5490
+Final AUPR Train: 0.6041, AUC Val 0.5760,AUC Test: 0.5646
+Elapsed time 0.0419 min
+plotting loss over epochs
+plotting loss over epochs
+plotting loss over epochs

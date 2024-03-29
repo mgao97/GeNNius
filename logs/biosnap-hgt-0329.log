@@ -1,0 +1,97 @@
+====================================================================================================
+data: HeteroData(
+  drug={
+    node_id=[4499],
+    x=[4499, 12],
+  },
+  protein={
+    node_id=[2113],
+    x=[2113, 20],
+  },
+  (drug, interaction, protein)={ edge_index=[2, 13838] },
+  (protein, rev_interaction, drug)={ edge_index=[2, 13838] }
+)
+====================================================================================================
+****************************************************************************************************
+train data: HeteroData(
+  drug={
+    node_id=[4499],
+    x=[4499, 12],
+  },
+  protein={
+    node_id=[2113],
+    x=[2113, 20],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 7751],
+    edge_label=[5811],
+    edge_label_index=[2, 5811],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 7751] }
+)
+****************************************************************************************************
+val data: HeteroData(
+  drug={
+    node_id=[4499],
+    x=[4499, 12],
+  },
+  protein={
+    node_id=[2113],
+    x=[2113, 20],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 9688],
+    edge_label=[4149],
+    edge_label_index=[2, 4149],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 9688] }
+)
+****************************************************************************************************
+test data: HeteroData(
+  drug={
+    node_id=[4499],
+    x=[4499, 12],
+  },
+  protein={
+    node_id=[2113],
+    x=[2113, 20],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 11071],
+    edge_label=[8301],
+    edge_label_index=[2, 8301],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 11071] }
+)
+****************************************************************************************************
+model: HGT(
+  (lin_dict): ModuleDict(
+    (drug): Linear(-1, 64, bias=True)
+    (protein): Linear(-1, 64, bias=True)
+  )
+  (convs): ModuleList(
+    (0-1): 2 x HGTConv(-1, 64, heads=4)
+  )
+  (lin): Linear(128, 1, bias=True)
+)
+Epoch: 51, Loss: 0.6186
+Epoch: 101, Loss: 0.6004
+Epoch: 151, Loss: 0.5877
+Epoch: 201, Loss: 0.5867
+Epoch: 251, Loss: 0.5858
+Epoch: 301, Loss: 0.5833
+Epoch: 351, Loss: 0.5748
+Epoch: 401, Loss: 0.5662
+Epoch: 451, Loss: 0.5632
+Epoch: 501, Loss: 0.5583
+Epoch: 551, Loss: 0.5468
+Epoch: 601, Loss: 0.5388
+Epoch: 651, Loss: 0.5345
+Epoch: 701, Loss: 0.5319
+Epoch: 751, Loss: 0.5288
+Epoch: 801, Loss: 0.5260
+Epoch: 851, Loss: 0.5242
+Epoch: 901, Loss: 0.5273
+Epoch: 951, Loss: 0.5200
+Epoch: 1001, Loss: 0.5185
+avg Test Accuracy: 0.7480  avg Test AUC: 0.7158  avg Test PRE: 0.6338

@@ -1,0 +1,103 @@
+====================================================================================================
+data: HeteroData(
+  drug={
+    node_id=[59],
+    x=[59, 12],
+  },
+  protein={
+    node_id=[199],
+    x=[199, 20],
+  },
+  (drug, interaction, protein)={ edge_index=[2, 620] },
+  (protein, rev_interaction, drug)={ edge_index=[2, 620] }
+)
+====================================================================================================
+****************************************************************************************************
+train data: HeteroData(
+  drug={
+    node_id=[59],
+    x=[59, 12],
+  },
+  protein={
+    node_id=[199],
+    x=[199, 20],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 348],
+    edge_label=[258],
+    edge_label_index=[2, 258],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 348] }
+)
+****************************************************************************************************
+val data: HeteroData(
+  drug={
+    node_id=[59],
+    x=[59, 12],
+  },
+  protein={
+    node_id=[199],
+    x=[199, 20],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 434],
+    edge_label=[186],
+    edge_label_index=[2, 186],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 434] }
+)
+****************************************************************************************************
+test data: HeteroData(
+  drug={
+    node_id=[59],
+    x=[59, 12],
+  },
+  protein={
+    node_id=[199],
+    x=[199, 20],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 496],
+    edge_label=[372],
+    edge_label_index=[2, 372],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 496] }
+)
+****************************************************************************************************
+edge_x: torch.Size([258, 32])
+labels: torch.Size([258])
+edge_x: torch.Size([186, 32])
+labels: torch.Size([186])
+edge_x: torch.Size([372, 32])
+labels: torch.Size([372])
+model: HGT(
+  (lin_dict): ModuleDict(
+    (drug): Linear(-1, 64, bias=True)
+    (protein): Linear(-1, 64, bias=True)
+  )
+  (convs): ModuleList(
+    (0-1): 2 x HGTConv(-1, 64, heads=4)
+  )
+  (lin): Linear(128, 1, bias=True)
+)
+Epoch: 51, Loss: 0.5722
+Epoch: 101, Loss: 0.5176
+Epoch: 151, Loss: 0.4991
+Epoch: 201, Loss: 0.4834
+Epoch: 251, Loss: 0.4821
+Epoch: 301, Loss: 0.4428
+Epoch: 351, Loss: 0.4781
+Epoch: 401, Loss: 0.4765
+Epoch: 451, Loss: 0.4679
+Epoch: 501, Loss: 0.4399
+Epoch: 551, Loss: 0.3865
+Epoch: 601, Loss: 0.4241
+Epoch: 651, Loss: 0.3757
+Epoch: 701, Loss: 0.3569
+Epoch: 751, Loss: 0.3180
+Epoch: 801, Loss: 0.3106
+Epoch: 851, Loss: 0.2894
+Epoch: 901, Loss: 0.2597
+Epoch: 951, Loss: 0.6229
+Epoch: 1001, Loss: 0.4554
+avg Test Accuracy: 1.0000  avg Test AUC: 1.0000  avg Test PRE: 1.0000

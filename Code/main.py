@@ -158,46 +158,56 @@ def main():
     loss_list = [[], [], []]
 
     init_time = time.time()
+    run_time = 10
+    acc_list, auc_list, pre_list = [],[],[]
 
-    for epoch in range(1,1001): 
-        loss = train(train_data)
-        train_auc,train_acc, _, _, train_loss, train_aupr = test(train_data)
-        val_auc, val_acc, _, _, val_loss, val_aupr = test(val_data)
-        test_auc, test_acc, emb, _, test_loss, test_aupr= test(test_data)
-        if epoch%50 == 0:
-            print(f'Epoch: {epoch:03d}, Loss: {loss:.4f}, Train: {train_auc:.4f}, '
-                    f'Val: {val_auc:.4f}, Test: {test_auc:.4f}')
-        
-        # list with AUC results
-        results_auc[0].append(train_auc)
-        results_auc[1].append(val_auc)
-        results_auc[2].append(test_auc)
+    for i in range(run_time):
+        for epoch in range(1,1001): 
+            loss = train(train_data)
+            train_auc,train_acc, _, _, train_loss, train_aupr = test(train_data)
+            val_auc, val_acc, _, _, val_loss, val_aupr = test(val_data)
+            test_auc, test_acc, emb, _, test_loss, test_aupr= test(test_data)
+            if epoch%50 == 0:
+                print(f'Epoch: {epoch:03d}, Loss: {loss:.4f}, Train: {train_auc:.4f}, '
+                        f'Val: {val_auc:.4f}, Test: {test_auc:.4f}')
+            
+            # list with AUC results
+            results_auc[0].append(train_auc)
+            results_auc[1].append(val_auc)
+            results_auc[2].append(test_auc)
 
-         # list with AUC results
-        results_acc[0].append(train_acc)
-        results_acc[1].append(val_acc)
-        results_acc[2].append(test_acc)
+            # list with ACC results
+            results_acc[0].append(train_acc)
+            results_acc[1].append(val_acc)
+            results_acc[2].append(test_acc)
 
-        # list with AUPR results
-        results_aupr[0].append(train_aupr)
-        results_aupr[1].append(val_aupr)
-        results_aupr[2].append(test_aupr)
+            # list with AUPR results
+            results_aupr[0].append(train_aupr)
+            results_aupr[1].append(val_aupr)
+            results_aupr[2].append(test_aupr)
 
-        # list with loss
-        loss_list[0].append(train_loss)
-        loss_list[1].append(val_loss)
-        loss_list[2].append(test_loss)
 
-        if early_stopper.early_stop(train_loss, val_loss) and epoch>40:    
-            print('early stopped at epoch ', epoch)         
-            break
+
+            # list with loss
+            loss_list[0].append(train_loss)
+            loss_list[1].append(val_loss)
+            loss_list[2].append(test_loss)
+
+            if early_stopper.early_stop(train_loss, val_loss) and epoch>40:    
+                print('early stopped at epoch ', epoch)         
+                break
+
+        auc_list.append(test_auc)
+        pre_list.append(test_aupr)
+        acc_list.append(test_acc)
     
     end_time = time.time()
 
     print(" ")
-    print(f"Final AUC Train: {train_auc:.4f}, AUC Val {val_auc:.4f},AUC Test: {test_auc:.4f}")
-    print(f"Final ACC Train: {train_acc:.4f}, ACC Val {val_acc:.4f},ACC Test: {test_acc:.4f}")
-    print(f"Final AUPR Train: {train_aupr:.4f}, AUC Val {val_aupr:.4f},AUC Test: {test_aupr:.4f}")
+    # print(f"Final AUC Train: {train_auc:.4f}, AUC Val {val_auc:.4f},AUC Test: {test_auc:.4f}")
+    # print(f"Final ACC Train: {train_acc:.4f}, ACC Val {val_acc:.4f},ACC Test: {test_acc:.4f}")
+    # print(f"Final AUPR Train: {train_aupr:.4f}, AUC Val {val_aupr:.4f},AUC Test: {test_aupr:.4f}")
+    print(f'avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' avg Test AUC: {sum(auc_list)/len(auc_list):.4f}', f' avg Test PRE: {sum(pre_list)/len(pre_list):.4f}')
     print(f"Elapsed time {(end_time-init_time)/60:.4f} min")
 
     OUTPUT_PATH =  os.path.join('Results', f'{DATABASE.upper()}_{hidden_channels}' )

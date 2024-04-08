@@ -246,14 +246,14 @@ print('='*100)
 
 import random
 random.seed(42)
-
+torch.manual_seed(42)
 # del data['protein', 'rev_interaction', 'drug'].edge_label 
 transform = T.RandomLinkSplit(
     num_val=0.1,
     num_test=0.2,
     is_undirected=True,
     disjoint_train_ratio=0.2,
-    neg_sampling_ratio=2.0,
+    neg_sampling_ratio=3.0,
     add_negative_train_samples=True,
     edge_types=("drug", "interaction", "protein"),
     rev_edge_types=("protein", "rev_interaction", "drug"), 
@@ -283,7 +283,7 @@ rf_model = RandomForestClassifier()
 # 定义模型参数
 hidden_channels = 64
 out_channels = 1
-num_heads = 4
+num_heads = 2
 num_layers = 2
 
 
@@ -305,26 +305,48 @@ for epoch in range(1,1001):  # 假设训练10个epoch
         print(f'Epoch: {epoch+1}, Loss: {loss:.4f}')
 
 
+# 测试模型
+train_x_dict = test(model, train_data, device)
+
+train_edge_x_list = []
+# 遍历所有边的索引
+for edge_idx in train_edge_indices:
+    # 从test_data中提取边的特征并拼接
+    edge_idx_x = torch.cat((train_x_dict['drug'][edge_idx[0]], train_x_dict['protein'][edge_idx[1]]), dim=0)
+    train_edge_x_list.append(edge_idx_x)
+# 将边特征列表转换为张量
+edge_x = torch.stack(train_edge_x_list, dim=0)
+
+train_edge_x_final = torch.cat((edge_x,torch.tensor(train_edge_x).to(device)),dim=1).detach().to('cpu')
+
+# 测试模型
+test_x_dict = test(model, test_data, device)
+
+test_edge_x_list = []
+# 遍历所有边的索引
+for edge_idx in test_edge_indices:
+    # 从test_data中提取边的特征并拼接
+    edge_idx_x = torch.cat((test_x_dict['drug'][edge_idx[0]], test_x_dict['protein'][edge_idx[1]]), dim=0)
+    test_edge_x_list.append(edge_idx_x)
+# 将边特征列表转换为张量
+con_edge_x = torch.stack(test_edge_x_list, dim=0)
+
+test_edge_x_final = torch.cat((con_edge_x,torch.tensor(test_edge_x).to(device)),dim=1).detach().to('cpu')
+
 
 acc_list,auc_list, pre_list = [],[],[]
 run_time = 10
 
 for i in range(run_time):
-    # 测试模型
-    x_dict = test(model, test_data, device)
+    init_time = time.time()
+    for epoch in range(1,101):  # 假设训练10个epoch 1001->101
+        loss = train(model, train_data, optimizer, device)
+        if epoch % 5 == 0:
+            print(f'Epoch: {epoch+1}, Loss: {loss:.4f}')
 
-    test_edge_x_list = []
-    # 遍历所有边的索引
-    for edge_idx in test_edge_indices:
-        # 从train_data中提取边的特征并拼接
-        edge_idx_x = torch.cat((x_dict['drug'][edge_idx[0]], x_dict['protein'][edge_idx[1]]), dim=0)
-        test_edge_x_list.append(edge_idx_x)
-    # 将边特征列表转换为张量
-    edge_x = torch.stack(test_edge_x_list, dim=0)
-
-    test_edge_x_final = torch.cat((edge_x,torch.tensor(test_edge_x).to(device)),dim=1).detach().to('cpu')
-
-    rf_model.fit(test_edge_x_final, test_y)
+    rf_model.fit(train_edge_x_final, train_y)
+    end_time = time.time()
+    print(f"Elapsed time {(end_time-init_time)/60:.4f} min")
 
     # 进行预测
     y_pred_proba = rf_model.predict_proba(test_edge_x_final)[:, 1]

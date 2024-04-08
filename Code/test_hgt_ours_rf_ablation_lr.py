@@ -54,59 +54,60 @@ from torch_geometric.nn import GATConv
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 
-parser = argparse.ArgumentParser(description='Training GNN on gene cell graph')
-parser.add_argument('--data_path', type=str)
-parser.add_argument('--epoch', type=int, default=100)
-# sampling times
-parser.add_argument('--n_batch', type=int, default=25,
-                    help='Number of batch (sampled graphs) for each epoch')
 
-parser.add_argument('--drug_rate', type=float, default=0.9)
-parser.add_argument('--protein_rate', type=float, default=0.3)
+# parser = argparse.ArgumentParser(description='Training GNN on gene cell graph')
+# parser.add_argument('--data_path', type=str)
+# parser.add_argument('--epoch', type=int, default=100)
+# # sampling times
+# parser.add_argument('--n_batch', type=int, default=25,
+#                     help='Number of batch (sampled graphs) for each epoch')
 
-# Result
-parser.add_argument('--data_name', type=str,
-                    help='The name for dataset')
-parser.add_argument('--result_dir', type=str,
-                    help='The address for storing the models and optimization results.')
-parser.add_argument('--reduction', type=str, default='raw',
-                    help='the method for feature extraction, pca, raw, AE')
-parser.add_argument('--in_dim', type=int, default=256,
-                    help='Number of hidden dimension (AE)')
-# GAE
-parser.add_argument('--n_hid', type=int,default=64,
-                    help='Number of hidden dimension')
-parser.add_argument('--n_heads', type=int,default=4,
-                    help='Number of attention head')
-parser.add_argument('--n_layers', type=int, default=2,
-                    help='Number of GNN layers')
-parser.add_argument('--dropout', type=float, default=0,
-                    help='Dropout ratio')
-parser.add_argument('--lr', type=float,default=0.01,
-                    help='learning rate')
+# parser.add_argument('--drug_rate', type=float, default=0.9)
+# parser.add_argument('--protein_rate', type=float, default=0.3)
 
-parser.add_argument('--batch_size', type=int,default=16,
-                    help='Number of output nodes for training')
-parser.add_argument('--layer_type', type=str, default='hgt',
-                    help='the layer type for GAE')
-parser.add_argument('--loss', type=str, default='kl',
-                    help='the loss for GAE')
-parser.add_argument('--factor', type=float, default='0.5',
-                    help='the attenuation factor')
-parser.add_argument('--patience', type=int, default=5,
-                    help='patience')
-parser.add_argument('--rf', type=float, default='0.0',
-                    help='the weights of regularization')
-parser.add_argument('--cuda', type=int, default=0,
-                    help='cuda 0 use GPU0 else cpu ')
-parser.add_argument('--rep', type=str, default='T',
-                    help='precision truncation')
-parser.add_argument('--AEtype', type=int, default=1,
-                    help='AEtype:1 embedding node autoencoder 2:HGT node autoencode')
-parser.add_argument('--optimizer', type=str, default='adamw',
-                    help='optimizer')
+# # Result
+# parser.add_argument('--data_name', type=str,
+#                     help='The name for dataset')
+# parser.add_argument('--result_dir', type=str,
+#                     help='The address for storing the models and optimization results.')
+# parser.add_argument('--reduction', type=str, default='raw',
+#                     help='the method for feature extraction, pca, raw, AE')
+# parser.add_argument('--in_dim', type=int, default=256,
+#                     help='Number of hidden dimension (AE)')
+# # GAE
+# parser.add_argument('--n_hid', type=int,default=64,
+#                     help='Number of hidden dimension')
+# parser.add_argument('--n_heads', type=int,default=4,
+#                     help='Number of attention head')
+# parser.add_argument('--n_layers', type=int, default=2,
+#                     help='Number of GNN layers')
+# parser.add_argument('--dropout', type=float, default=0,
+#                     help='Dropout ratio')
+# parser.add_argument('--lr', type=float,default=0.01,
+#                     help='learning rate')
 
-args = parser.parse_args()
+# parser.add_argument('--batch_size', type=int,default=16,
+#                     help='Number of output nodes for training')
+# parser.add_argument('--layer_type', type=str, default='hgt',
+#                     help='the layer type for GAE')
+# parser.add_argument('--loss', type=str, default='kl',
+#                     help='the loss for GAE')
+# parser.add_argument('--factor', type=float, default='0.5',
+#                     help='the attenuation factor')
+# parser.add_argument('--patience', type=int, default=5,
+#                     help='patience')
+# parser.add_argument('--rf', type=float, default='0.0',
+#                     help='the weights of regularization')
+# parser.add_argument('--cuda', type=int, default=0,
+#                     help='cuda 0 use GPU0 else cpu ')
+# parser.add_argument('--rep', type=str, default='T',
+#                     help='precision truncation')
+# parser.add_argument('--AEtype', type=int, default=1,
+#                     help='AEtype:1 embedding node autoencoder 2:HGT node autoencode')
+# parser.add_argument('--optimizer', type=str, default='adamw',
+#                     help='optimizer')
+
+# args = parser.parse_args()
 
 
 
@@ -236,7 +237,7 @@ def data_divide(data):
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-path = 'Data/BIOSNAP/hetero_data_biosnap.pt'
+path = 'Data/DRUGBANK/hetero_data_drugbank.pt'
 data = torch.load(path)
 data = T.ToUndirected()(data)
 
@@ -251,6 +252,8 @@ random.seed(42)
 transform = T.RandomLinkSplit(
     num_val=0.1,
     num_test=0.2,
+    # num_val=0.2,
+    # num_test=0.3,
     is_undirected=True,
     disjoint_train_ratio=0.2,
     neg_sampling_ratio=2.0,
@@ -277,13 +280,12 @@ train_edge_x, train_y = train_edge_x.cpu(), train_y.cpu()
 val_edge_x, val_y = val_edge_x.cpu(), val_y.cpu()
 test_edge_x, test_y = test_edge_x.cpu(), test_y.cpu()
 
-# 初始化逻辑回归模型
-rf_model = RandomForestClassifier()
+
 
 # 定义模型参数
 hidden_channels = 64
 out_channels = 1
-num_heads = 4
+num_heads = 2
 num_layers = 2
 
 
@@ -298,12 +300,13 @@ print('model:',model)
 # 定义优化器
 optimizer = Adam(model.parameters(), lr=0.005)
 
-# 训练模型
-for epoch in range(1,1001):  # 假设训练10个epoch
-    loss = train(model, train_data, optimizer, device)
-    if epoch % 50 == 0:
-        print(f'Epoch: {epoch+1}, Loss: {loss:.4f}')
 
+# 初始化逻辑回归模型
+rf_model = RandomForestClassifier()
+
+
+acc_list, auc_list, pre_list = [],[],[]
+run_time = 10
 
 # 测试模型
 train_x_dict = test(model, train_data, device)
@@ -333,43 +336,51 @@ con_edge_x = torch.stack(test_edge_x_list, dim=0)
 
 test_edge_x_final = torch.cat((con_edge_x,torch.tensor(test_edge_x).to(device)),dim=1).detach().to('cpu')
 
-acc_list,auc_list, pre_list = [],[],[]
-run_time = 10
 
 for i in range(run_time):
+    # 训练模型
     init_time = time.time()
     for epoch in range(1,1001):  # 假设训练10个epoch 1001->101
         loss = train(model, train_data, optimizer, device)
         if epoch % 5 == 0:
             print(f'Epoch: {epoch+1}, Loss: {loss:.4f}')
 
+    
+
     rf_model.fit(train_edge_x_final, train_y)
     end_time = time.time()
     print(f"Elapsed time {(end_time-init_time)/60:.4f} min")
+
+
 
     # 进行预测
     y_pred_proba = rf_model.predict_proba(test_edge_x_final)[:, 1]
     y_pred = rf_model.predict(test_edge_x_final)
 
+    
+
+
+    print('test data and predicted data:\n')
     # 计算AUC
     auc = roc_auc_score(test_y, y_pred_proba)
+    # print('-------------------auc:',auc)
     auc_list.append(auc)
 
     # 计算Precision
     precision = precision_score(test_y, y_pred)
+    # print('-------------------pre:',precision)
     pre_list.append(precision)
 
     # 计算Accuracy
     accuracy = accuracy_score(test_y, y_pred)
+    # print('-------------------acc:',accuracy)
     acc_list.append(accuracy)
 
-
-    acc_list.append(accuracy)
-    auc_list.append(auc)
-    pre_list.append(precision)
+    
 
 
 print(f'avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' avg Test AUC: {sum(auc_list)/len(auc_list):.4f}', f' avg Test PRE: {sum(pre_list)/len(pre_list):.4f}')
+
 
 
 

@@ -30,7 +30,7 @@ from warnings import filterwarnings
 filterwarnings("ignore")
 
 
-seed = 0
+seed = 42
 random.seed(seed)
 torch.manual_seed(seed)
 torch.cuda.manual_seed(seed)
@@ -184,7 +184,7 @@ for i in range(run_time):
         for u,v,p in preds:
             test_preds.append(p)
     
-    print(test_preds,len(test_preds))
+    # print(test_preds,len(test_preds))
 
     # 计算AUC
     auc = roc_auc_score(test_y, test_preds)
@@ -199,7 +199,7 @@ for i in range(run_time):
     acc_list.append(accuracy)
 
 
-print(f'Jacard Coefficient Metric: Avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' Avg Test AUC: {sum(auc_list)/len(auc_list):.4f}',f' Avg Test AUC: {sum(pre_list)/len(pre_list):.4f}')
+print(f'Jacard Coefficient Metric: Avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' Avg Test AUC: {sum(auc_list)/len(auc_list):.4f}',f' Avg Test PRE: {sum(pre_list)/len(pre_list):.4f}')
 
 
 

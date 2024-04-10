@@ -247,7 +247,7 @@ print('='*100)
 
 import random
 random.seed(42)
-
+torch.manual_seed(42)
 # del data['protein', 'rev_interaction', 'drug'].edge_label 
 transform = T.RandomLinkSplit(
     num_val=0.1,
@@ -286,7 +286,7 @@ test_edge_x, test_y = test_edge_x.cpu(), test_y.cpu()
 hidden_channels = 64
 out_channels = 1
 num_heads = 2
-num_layers = 4
+num_layers = 5
 
 
 # 初始化模型

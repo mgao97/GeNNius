@@ -32,7 +32,7 @@ from warnings import filterwarnings
 filterwarnings("ignore")
 
 
-seed = 0
+seed = 42
 random.seed(seed)
 torch.manual_seed(seed)
 torch.cuda.manual_seed(seed)
@@ -245,15 +245,15 @@ print('data:', data)
 print('='*100)
 
 import random
-random.seed(42)
-torch.manual_seed(42)
+# random.seed(42)
+# torch.manual_seed(42)
 # del data['protein', 'rev_interaction', 'drug'].edge_label 
 transform = T.RandomLinkSplit(
     num_val=0.1,
     num_test=0.2,
     is_undirected=True,
     disjoint_train_ratio=0.2,
-    neg_sampling_ratio=3.0,
+    neg_sampling_ratio=2.0,
     add_negative_train_samples=True,
     edge_types=("drug", "interaction", "protein"),
     rev_edge_types=("protein", "rev_interaction", "drug"), 
@@ -298,12 +298,6 @@ print('model:',model)
 # 定义优化器
 optimizer = Adam(model.parameters(), lr=0.05)
 
-# 训练模型
-for epoch in range(1,1001):  # 假设训练10个epoch
-    loss = train(model, train_data, optimizer, device)
-    if epoch % 50 == 0:
-        print(f'Epoch: {epoch+1}, Loss: {loss:.4f}')
-
 
 # 测试模型
 train_x_dict = test(model, train_data, device)
@@ -339,9 +333,9 @@ run_time = 10
 
 for i in range(run_time):
     init_time = time.time()
-    for epoch in range(1,101):  # 假设训练10个epoch 1001->101
+    for epoch in range(1,1001):  # 假设训练10个epoch 1001->101
         loss = train(model, train_data, optimizer, device)
-        if epoch % 5 == 0:
+        if epoch % 50 == 0:
             print(f'Epoch: {epoch+1}, Loss: {loss:.4f}')
 
     rf_model.fit(train_edge_x_final, train_y)

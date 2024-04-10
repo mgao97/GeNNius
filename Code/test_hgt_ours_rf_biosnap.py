@@ -32,7 +32,7 @@ from warnings import filterwarnings
 filterwarnings("ignore")
 
 
-seed = 0
+seed = 42
 random.seed(seed)
 torch.manual_seed(seed)
 torch.cuda.manual_seed(seed)
@@ -246,7 +246,7 @@ print('='*100)
 
 import random
 random.seed(42)
-
+torch.manual_seed(42)
 # del data['protein', 'rev_interaction', 'drug'].edge_label 
 transform = T.RandomLinkSplit(
     num_val=0.1,
@@ -283,7 +283,7 @@ rf_model = RandomForestClassifier()
 # 定义模型参数
 hidden_channels = 64
 out_channels = 1
-num_heads = 4
+num_heads = 2
 num_layers = 2
 
 
@@ -296,13 +296,7 @@ print('model:',model)
 # test_x_hgt_emb = model(test_data)
 
 # 定义优化器
-optimizer = Adam(model.parameters(), lr=0.005)
-
-# 训练模型
-for epoch in range(1,1001):  # 假设训练10个epoch
-    loss = train(model, train_data, optimizer, device)
-    if epoch % 50 == 0:
-        print(f'Epoch: {epoch+1}, Loss: {loss:.4f}')
+optimizer = Adam(model.parameters(), lr=0.05)
 
 
 # 测试模型
@@ -340,7 +334,7 @@ for i in range(run_time):
     init_time = time.time()
     for epoch in range(1,1001):  # 假设训练10个epoch 1001->101
         loss = train(model, train_data, optimizer, device)
-        if epoch % 5 == 0:
+        if epoch % 50 == 0:
             print(f'Epoch: {epoch+1}, Loss: {loss:.4f}')
 
     rf_model.fit(train_edge_x_final, train_y)

@@ -247,7 +247,7 @@ print('='*100)
 
 import random
 random.seed(42)
-
+torch.manual_seed(42)
 # del data['protein', 'rev_interaction', 'drug'].edge_label 
 transform = T.RandomLinkSplit(
     num_val=0.1,
@@ -298,7 +298,7 @@ print('model:',model)
 # test_x_hgt_emb = model(test_data)
 
 # 定义优化器
-optimizer = Adam(model.parameters(), lr=0.005)
+optimizer = Adam(model.parameters(), lr=0.01)
 
 
 # 初始化逻辑回归模型

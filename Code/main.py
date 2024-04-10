@@ -113,7 +113,7 @@ def main():
     
     import random
     random.seed(42)
-
+    torch.manual_seed(42)
     split = T.RandomLinkSplit(
         num_val= 0.1,
         num_test= 0.2, 

@@ -32,7 +32,7 @@ from warnings import filterwarnings
 filterwarnings("ignore")
 
 
-seed = 0
+seed = 42
 random.seed(seed)
 torch.manual_seed(seed)
 torch.cuda.manual_seed(seed)
@@ -54,59 +54,59 @@ from torch_geometric.nn import GATConv
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 
-parser = argparse.ArgumentParser(description='Training GNN on gene cell graph')
-parser.add_argument('--data_path', type=str)
-parser.add_argument('--epoch', type=int, default=100)
-# sampling times
-parser.add_argument('--n_batch', type=int, default=25,
-                    help='Number of batch (sampled graphs) for each epoch')
+# parser = argparse.ArgumentParser(description='Training GNN on gene cell graph')
+# parser.add_argument('--data_path', type=str)
+# parser.add_argument('--epoch', type=int, default=100)
+# # sampling times
+# parser.add_argument('--n_batch', type=int, default=25,
+#                     help='Number of batch (sampled graphs) for each epoch')
 
-parser.add_argument('--drug_rate', type=float, default=0.9)
-parser.add_argument('--protein_rate', type=float, default=0.3)
+# parser.add_argument('--drug_rate', type=float, default=0.9)
+# parser.add_argument('--protein_rate', type=float, default=0.3)
 
-# Result
-parser.add_argument('--data_name', type=str,
-                    help='The name for dataset')
-parser.add_argument('--result_dir', type=str,
-                    help='The address for storing the models and optimization results.')
-parser.add_argument('--reduction', type=str, default='raw',
-                    help='the method for feature extraction, pca, raw, AE')
-parser.add_argument('--in_dim', type=int, default=256,
-                    help='Number of hidden dimension (AE)')
-# GAE
-parser.add_argument('--n_hid', type=int,default=64,
-                    help='Number of hidden dimension')
-parser.add_argument('--n_heads', type=int,default=4,
-                    help='Number of attention head')
-parser.add_argument('--n_layers', type=int, default=2,
-                    help='Number of GNN layers')
-parser.add_argument('--dropout', type=float, default=0,
-                    help='Dropout ratio')
-parser.add_argument('--lr', type=float,default=0.01,
-                    help='learning rate')
+# # Result
+# parser.add_argument('--data_name', type=str,
+#                     help='The name for dataset')
+# parser.add_argument('--result_dir', type=str,
+#                     help='The address for storing the models and optimization results.')
+# parser.add_argument('--reduction', type=str, default='raw',
+#                     help='the method for feature extraction, pca, raw, AE')
+# parser.add_argument('--in_dim', type=int, default=256,
+#                     help='Number of hidden dimension (AE)')
+# # GAE
+# parser.add_argument('--n_hid', type=int,default=64,
+#                     help='Number of hidden dimension')
+# parser.add_argument('--n_heads', type=int,default=4,
+#                     help='Number of attention head')
+# parser.add_argument('--n_layers', type=int, default=2,
+#                     help='Number of GNN layers')
+# parser.add_argument('--dropout', type=float, default=0,
+#                     help='Dropout ratio')
+# parser.add_argument('--lr', type=float,default=0.01,
+#                     help='learning rate')
 
-parser.add_argument('--batch_size', type=int,default=16,
-                    help='Number of output nodes for training')
-parser.add_argument('--layer_type', type=str, default='hgt',
-                    help='the layer type for GAE')
-parser.add_argument('--loss', type=str, default='kl',
-                    help='the loss for GAE')
-parser.add_argument('--factor', type=float, default='0.5',
-                    help='the attenuation factor')
-parser.add_argument('--patience', type=int, default=5,
-                    help='patience')
-parser.add_argument('--rf', type=float, default='0.0',
-                    help='the weights of regularization')
-parser.add_argument('--cuda', type=int, default=0,
-                    help='cuda 0 use GPU0 else cpu ')
-parser.add_argument('--rep', type=str, default='T',
-                    help='precision truncation')
-parser.add_argument('--AEtype', type=int, default=1,
-                    help='AEtype:1 embedding node autoencoder 2:HGT node autoencode')
-parser.add_argument('--optimizer', type=str, default='adamw',
-                    help='optimizer')
+# parser.add_argument('--batch_size', type=int,default=16,
+#                     help='Number of output nodes for training')
+# parser.add_argument('--layer_type', type=str, default='hgt',
+#                     help='the layer type for GAE')
+# parser.add_argument('--loss', type=str, default='kl',
+#                     help='the loss for GAE')
+# parser.add_argument('--factor', type=float, default='0.5',
+#                     help='the attenuation factor')
+# parser.add_argument('--patience', type=int, default=5,
+#                     help='patience')
+# parser.add_argument('--rf', type=float, default='0.0',
+#                     help='the weights of regularization')
+# parser.add_argument('--cuda', type=int, default=0,
+#                     help='cuda 0 use GPU0 else cpu ')
+# parser.add_argument('--rep', type=str, default='T',
+#                     help='precision truncation')
+# parser.add_argument('--AEtype', type=int, default=1,
+#                     help='AEtype:1 embedding node autoencoder 2:HGT node autoencode')
+# parser.add_argument('--optimizer', type=str, default='adamw',
+#                     help='optimizer')
 
-args = parser.parse_args()
+# args = parser.parse_args()
 
 
 
@@ -161,6 +161,7 @@ from torch.optim import Adam
 from sklearn.metrics import accuracy_score,precision_score,roc_auc_score
 
 def train(model, data, optimizer, device):
+    best_val_auc = 0.0
     model.train()
 
     # 获取训练数据
@@ -182,6 +183,7 @@ def train(model, data, optimizer, device):
     # 反向传播
     loss.backward()
     optimizer.step()
+
 
     return loss.item()
 
@@ -246,7 +248,7 @@ print('='*100)
 
 import random
 random.seed(42)
-torch.manual_seed(42)
+# torch.manual_seed(42)
 
 # del data['protein', 'rev_interaction', 'drug'].edge_label 
 transform = T.RandomLinkSplit(
@@ -292,21 +294,12 @@ num_layers = 2
 model = HGT(hidden_channels, out_channels, num_heads, num_layers).to(device)
 print('model:',model)
 
-# train_x_hgt_emb = model(train_data)
-# val_x_hgt_emb = model(val_data)
-# test_x_hgt_emb = model(test_data)
 
 # 定义优化器
-optimizer = Adam(model.parameters(), lr=0.05)
-
-# 训练模型
-for epoch in range(1,1001):  # 假设训练10个epoch
-    loss = train(model, train_data, optimizer, device)
-    if epoch % 50 == 0:
-        print(f'Epoch: {epoch+1}, Loss: {loss:.4f}')
+optimizer = Adam(model.parameters(), lr=0.01)
 
 
-# 测试模型
+# 构造训练数据
 train_x_dict = test(model, train_data, device)
 
 train_edge_x_list = []
@@ -320,7 +313,8 @@ edge_x = torch.stack(train_edge_x_list, dim=0)
 
 train_edge_x_final = torch.cat((edge_x,torch.tensor(train_edge_x).to(device)),dim=1).detach().to('cpu')
 
-# 测试模型
+
+# 测试数据
 test_x_dict = test(model, test_data, device)
 
 test_edge_x_list = []
@@ -337,11 +331,12 @@ test_edge_x_final = torch.cat((con_edge_x,torch.tensor(test_edge_x).to(device)),
 acc_list,auc_list, pre_list = [],[],[]
 run_time = 10
 
+
 for i in range(run_time):
     init_time = time.time()
     for epoch in range(1,1001):  # 假设训练10个epoch 1001->101
         loss = train(model, train_data, optimizer, device)
-        if epoch % 5 == 0:
+        if epoch % 50 == 0:
             print(f'Epoch: {epoch+1}, Loss: {loss:.4f}')
 
     rf_model.fit(train_edge_x_final, train_y)

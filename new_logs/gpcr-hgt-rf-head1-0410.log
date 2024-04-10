@@ -1,0 +1,269 @@
+====================================================================================================
+data: HeteroData(
+  drug={ x=[222, 12] },
+  protein={ x=[94, 20] },
+  (drug, interaction, protein)={ edge_index=[2, 634] },
+  (protein, rev_interaction, drug)={ edge_index=[2, 634] }
+)
+====================================================================================================
+****************************************************************************************************
+train data: HeteroData(
+  drug={ x=[222, 12] },
+  protein={ x=[94, 20] },
+  (drug, interaction, protein)={
+    edge_index=[2, 356],
+    edge_label=[267],
+    edge_label_index=[2, 267],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 356] }
+)
+****************************************************************************************************
+val data: HeteroData(
+  drug={ x=[222, 12] },
+  protein={ x=[94, 20] },
+  (drug, interaction, protein)={
+    edge_index=[2, 445],
+    edge_label=[189],
+    edge_label_index=[2, 189],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 445] }
+)
+****************************************************************************************************
+test data: HeteroData(
+  drug={ x=[222, 12] },
+  protein={ x=[94, 20] },
+  (drug, interaction, protein)={
+    edge_index=[2, 508],
+    edge_label=[378],
+    edge_label_index=[2, 378],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 508] }
+)
+****************************************************************************************************
+edge_x: torch.Size([267, 32])
+labels: torch.Size([267])
+edge_x: torch.Size([189, 32])
+labels: torch.Size([189])
+edge_x: torch.Size([378, 32])
+labels: torch.Size([378])
+model: HGT(
+  (lin_dict): ModuleDict(
+    (drug): Linear(-1, 64, bias=True)
+    (protein): Linear(-1, 64, bias=True)
+  )
+  (convs): ModuleList(
+    (0-1): 2 x HGTConv(-1, 64, heads=1)
+  )
+  (lin): Linear(128, 1, bias=True)
+)
+Epoch: 51, Loss: 0.4835
+Epoch: 101, Loss: 0.4695
+Epoch: 151, Loss: 0.4642
+Epoch: 201, Loss: 57.3857
+Epoch: 251, Loss: 57.3715
+Epoch: 301, Loss: 57.3706
+Epoch: 351, Loss: 57.3700
+Epoch: 401, Loss: 57.3692
+Epoch: 451, Loss: 57.3684
+Epoch: 501, Loss: 57.3673
+Epoch: 551, Loss: 57.3661
+Epoch: 601, Loss: 57.3649
+Epoch: 651, Loss: 57.3636
+Epoch: 701, Loss: 57.3623
+Epoch: 751, Loss: 57.3610
+Epoch: 801, Loss: 57.3602
+Epoch: 851, Loss: 57.3595
+Epoch: 901, Loss: 57.3589
+Epoch: 951, Loss: 57.3585
+Epoch: 1001, Loss: 57.3580
+Elapsed time 0.0534 min
+Epoch: 51, Loss: 57.3577
+Epoch: 101, Loss: 57.3573
+Epoch: 151, Loss: 57.3570
+Epoch: 201, Loss: 57.3568
+Epoch: 251, Loss: 57.3565
+Epoch: 301, Loss: 57.3562
+Epoch: 351, Loss: 57.3560
+Epoch: 401, Loss: 57.3557
+Epoch: 451, Loss: 57.3553
+Epoch: 501, Loss: 57.3550
+Epoch: 551, Loss: 57.3546
+Epoch: 601, Loss: 57.3541
+Epoch: 651, Loss: 57.3535
+Epoch: 701, Loss: 57.3528
+Epoch: 751, Loss: 57.3519
+Epoch: 801, Loss: 57.3506
+Epoch: 851, Loss: 57.3489
+Epoch: 901, Loss: 57.3465
+Epoch: 951, Loss: 57.3434
+Epoch: 1001, Loss: 57.3397
+Elapsed time 0.0528 min
+Epoch: 51, Loss: 57.3360
+Epoch: 101, Loss: 57.3327
+Epoch: 151, Loss: 57.3302
+Epoch: 201, Loss: 57.3282
+Epoch: 251, Loss: 57.3265
+Epoch: 301, Loss: 57.3249
+Epoch: 351, Loss: 57.3235
+Epoch: 401, Loss: 57.3221
+Epoch: 451, Loss: 57.3208
+Epoch: 501, Loss: 57.3195
+Epoch: 551, Loss: 57.3182
+Epoch: 601, Loss: 57.3170
+Epoch: 651, Loss: 57.3159
+Epoch: 701, Loss: 57.3147
+Epoch: 751, Loss: 57.3136
+Epoch: 801, Loss: 57.3126
+Epoch: 851, Loss: 57.3116
+Epoch: 901, Loss: 57.3107
+Epoch: 951, Loss: 57.3100
+Epoch: 1001, Loss: 57.3092
+Elapsed time 0.0536 min
+Epoch: 51, Loss: 57.3086
+Epoch: 101, Loss: 57.3080
+Epoch: 151, Loss: 57.3075
+Epoch: 201, Loss: 57.3071
+Epoch: 251, Loss: 57.3067
+Epoch: 301, Loss: 57.3064
+Epoch: 351, Loss: 57.3061
+Epoch: 401, Loss: 57.3059
+Epoch: 451, Loss: 57.3056
+Epoch: 501, Loss: 57.3054
+Epoch: 551, Loss: 57.3053
+Epoch: 601, Loss: 57.3051
+Epoch: 651, Loss: 57.3050
+Epoch: 701, Loss: 57.3048
+Epoch: 751, Loss: 57.3047
+Epoch: 801, Loss: 57.3046
+Epoch: 851, Loss: 57.3045
+Epoch: 901, Loss: 57.3045
+Epoch: 951, Loss: 57.3044
+Epoch: 1001, Loss: 57.3043
+Elapsed time 0.0537 min
+Epoch: 51, Loss: 57.3042
+Epoch: 101, Loss: 57.3042
+Epoch: 151, Loss: 57.3041
+Epoch: 201, Loss: 57.3041
+Epoch: 251, Loss: 57.3041
+Epoch: 301, Loss: 57.3040
+Epoch: 351, Loss: 57.3040
+Epoch: 401, Loss: 57.3039
+Epoch: 451, Loss: 57.3039
+Epoch: 501, Loss: 57.3039
+Epoch: 551, Loss: 57.3039
+Epoch: 601, Loss: 57.3038
+Epoch: 651, Loss: 57.3038
+Epoch: 701, Loss: 57.3038
+Epoch: 751, Loss: 57.3038
+Epoch: 801, Loss: 57.3037
+Epoch: 851, Loss: 57.3037
+Epoch: 901, Loss: 57.3037
+Epoch: 951, Loss: 57.3037
+Epoch: 1001, Loss: 57.3037
+Elapsed time 0.0537 min
+Epoch: 51, Loss: 57.3037
+Epoch: 101, Loss: 57.3036
+Epoch: 151, Loss: 57.3036
+Epoch: 201, Loss: 57.3036
+Epoch: 251, Loss: 57.3036
+Epoch: 301, Loss: 57.3036
+Epoch: 351, Loss: 57.3036
+Epoch: 401, Loss: 57.3036
+Epoch: 451, Loss: 57.3036
+Epoch: 501, Loss: 57.3036
+Epoch: 551, Loss: 57.3036
+Epoch: 601, Loss: 57.9041
+Epoch: 651, Loss: 57.8027
+Epoch: 701, Loss: 57.5888
+Epoch: 751, Loss: 57.5629
+Epoch: 801, Loss: 57.5581
+Epoch: 851, Loss: 57.5515
+Epoch: 901, Loss: 57.5461
+Epoch: 951, Loss: 57.5415
+Epoch: 1001, Loss: 57.5375
+Elapsed time 0.0526 min
+Epoch: 51, Loss: 57.5339
+Epoch: 101, Loss: 57.5306
+Epoch: 151, Loss: 57.5275
+Epoch: 201, Loss: 57.5248
+Epoch: 251, Loss: 57.5222
+Epoch: 301, Loss: 57.5199
+Epoch: 351, Loss: 57.5177
+Epoch: 401, Loss: 57.5157
+Epoch: 451, Loss: 57.5138
+Epoch: 501, Loss: 57.5121
+Epoch: 551, Loss: 57.5106
+Epoch: 601, Loss: 57.5092
+Epoch: 651, Loss: 57.5079
+Epoch: 701, Loss: 57.5067
+Epoch: 751, Loss: 57.5056
+Epoch: 801, Loss: 57.5045
+Epoch: 851, Loss: 57.5036
+Epoch: 901, Loss: 57.5027
+Epoch: 951, Loss: 57.5020
+Epoch: 1001, Loss: 57.5012
+Elapsed time 0.0518 min
+Epoch: 51, Loss: 57.5006
+Epoch: 101, Loss: 57.4999
+Epoch: 151, Loss: 57.4994
+Epoch: 201, Loss: 57.4988
+Epoch: 251, Loss: 57.4983
+Epoch: 301, Loss: 57.4979
+Epoch: 351, Loss: 57.4975
+Epoch: 401, Loss: 57.4971
+Epoch: 451, Loss: 57.4968
+Epoch: 501, Loss: 57.4965
+Epoch: 551, Loss: 57.4962
+Epoch: 601, Loss: 57.4959
+Epoch: 651, Loss: 57.4957
+Epoch: 701, Loss: 57.4955
+Epoch: 751, Loss: 57.4953
+Epoch: 801, Loss: 57.4952
+Epoch: 851, Loss: 57.4950
+Epoch: 901, Loss: 57.4949
+Epoch: 951, Loss: 57.4949
+Epoch: 1001, Loss: 57.4948
+Elapsed time 0.0525 min
+Epoch: 51, Loss: 57.4948
+Epoch: 101, Loss: 57.4947
+Epoch: 151, Loss: 57.4947
+Epoch: 201, Loss: 57.4947
+Epoch: 251, Loss: 57.4948
+Epoch: 301, Loss: 57.4948
+Epoch: 351, Loss: 57.4949
+Epoch: 401, Loss: 57.4950
+Epoch: 451, Loss: 57.4951
+Epoch: 501, Loss: 57.4952
+Epoch: 551, Loss: 57.4953
+Epoch: 601, Loss: 57.4954
+Epoch: 651, Loss: 57.4956
+Epoch: 701, Loss: 57.4958
+Epoch: 751, Loss: 57.4959
+Epoch: 801, Loss: 57.4961
+Epoch: 851, Loss: 57.4963
+Epoch: 901, Loss: 57.4965
+Epoch: 951, Loss: 57.4968
+Epoch: 1001, Loss: 57.4970
+Elapsed time 0.0537 min
+Epoch: 51, Loss: 57.4973
+Epoch: 101, Loss: 57.4975
+Epoch: 151, Loss: 57.4978
+Epoch: 201, Loss: 57.4980
+Epoch: 251, Loss: 57.4983
+Epoch: 301, Loss: 57.4986
+Epoch: 351, Loss: 57.4989
+Epoch: 401, Loss: 57.4992
+Epoch: 451, Loss: 57.4995
+Epoch: 501, Loss: 57.4999
+Epoch: 551, Loss: 57.5002
+Epoch: 601, Loss: 57.5005
+Epoch: 651, Loss: 57.5009
+Epoch: 701, Loss: 57.5012
+Epoch: 751, Loss: 57.5016
+Epoch: 801, Loss: 57.5020
+Epoch: 851, Loss: 57.5023
+Epoch: 901, Loss: 57.5027
+Epoch: 951, Loss: 57.5031
+Epoch: 1001, Loss: 57.5035
+Elapsed time 0.0530 min
+avg Test Accuracy: 0.7690  avg Test AUC: 0.8111  avg Test PRE: 0.7045

@@ -222,6 +222,7 @@ data = T.ToUndirected()(data)
 
 print('='*100)
 print('data:', data)
+# print(data['drug']['node_id'])
 print('='*100)
 
 import random

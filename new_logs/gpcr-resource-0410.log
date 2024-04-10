@@ -1,0 +1,68 @@
+====================================================================================================
+data: HeteroData(
+  drug={
+    x=[222, 12],
+    node_id=[222],
+  },
+  protein={
+    x=[94, 20],
+    node_id=[94],
+  },
+  (drug, interaction, protein)={ edge_index=[2, 634] },
+  (protein, rev_interaction, drug)={ edge_index=[2, 634] }
+)
+====================================================================================================
+****************************************************************************************************
+train data: HeteroData(
+  drug={
+    x=[222, 12],
+    node_id=[222],
+  },
+  protein={
+    x=[94, 20],
+    node_id=[94],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 356],
+    edge_label=[267],
+    edge_label_index=[2, 267],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 356] }
+)
+****************************************************************************************************
+val data: HeteroData(
+  drug={
+    x=[222, 12],
+    node_id=[222],
+  },
+  protein={
+    x=[94, 20],
+    node_id=[94],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 445],
+    edge_label=[189],
+    edge_label_index=[2, 189],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 445] }
+)
+****************************************************************************************************
+test data: HeteroData(
+  drug={
+    x=[222, 12],
+    node_id=[222],
+  },
+  protein={
+    x=[94, 20],
+    node_id=[94],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 508],
+    edge_label=[378],
+    edge_label_index=[2, 378],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 508] }
+)
+****************************************************************************************************
+graph info: 222 625
+Jacard Coefficient Metric: Avg Test Accuracy: 0.5873  Avg Test AUC: 0.6064  Avg Test AUC: 0.4038

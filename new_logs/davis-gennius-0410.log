@@ -1,0 +1,78 @@
+[INFO] hidden channels: 64]
+Dataset:  davis
+reading from Data/DAVIS/hetero_data_davis.pt
+hd:  64
+cuda
+Data is cuda?: True
+data HeteroData(
+  drug={
+    node_id=[59],
+    x=[59, 12],
+  },
+  protein={
+    node_id=[199],
+    x=[199, 20],
+  },
+  (drug, interaction, protein)={ edge_index=[2, 620] },
+  (protein, rev_interaction, drug)={ edge_index=[2, 620] }
+)
+train_data HeteroData(
+  drug={
+    node_id=[59],
+    x=[59, 12],
+  },
+  protein={
+    node_id=[199],
+    x=[199, 20],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 348],
+    edge_label=[258],
+    edge_label_index=[2, 258],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 348] }
+)
+model: Model(
+  (encoder): GraphModule(
+    (conv_in): ModuleDict(
+      (drug__interaction__protein): SAGEConv((-1, -1), 64, aggr=sum)
+      (protein__rev_interaction__drug): SAGEConv((-1, -1), 64, aggr=sum)
+    )
+    (act): ModuleDict(
+      (drug): Tanh()
+      (protein): Tanh()
+    )
+    (dropout): ModuleDict(
+      (drug): Dropout(p=0.2, inplace=False)
+      (protein): Dropout(p=0.2, inplace=False)
+    )
+    (conv_med): ModuleDict(
+      (drug__interaction__protein): SAGEConv((-1, -1), 64, aggr=sum)
+      (protein__rev_interaction__drug): SAGEConv((-1, -1), 64, aggr=sum)
+    )
+    (conv_out): ModuleDict(
+      (drug__interaction__protein): SAGEConv((-1, -1), 64, aggr=sum)
+      (protein__rev_interaction__drug): SAGEConv((-1, -1), 64, aggr=sum)
+    )
+  )
+  (decoder): EdgeClassifier(
+    (lin1): Linear(in_features=128, out_features=64, bias=True)
+    (lin2): Linear(in_features=64, out_features=1, bias=True)
+  )
+)
+early stopped at epoch  41
+early stopped at epoch  41
+early stopped at epoch  41
+early stopped at epoch  41
+early stopped at epoch  41
+early stopped at epoch  41
+early stopped at epoch  41
+early stopped at epoch  41
+early stopped at epoch  41
+early stopped at epoch  41
+ 
+avg Test Accuracy: 0.8081  avg Test AUC: 0.8692  avg Test PRE: 0.7069
+Elapsed time 0.0545 min
+plotting loss over epochs
+plotting loss over epochs
+plotting loss over epochs

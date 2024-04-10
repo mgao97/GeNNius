@@ -1,0 +1,73 @@
+====================================================================================================
+data: HeteroData(
+  drug={ x=[222, 12] },
+  protein={ x=[94, 20] },
+  (drug, interaction, protein)={ edge_index=[2, 634] },
+  (protein, rev_interaction, drug)={ edge_index=[2, 634] }
+)
+====================================================================================================
+****************************************************************************************************
+train data: HeteroData(
+  drug={ x=[222, 12] },
+  protein={ x=[94, 20] },
+  (drug, interaction, protein)={
+    edge_index=[2, 356],
+    edge_label=[267],
+    edge_label_index=[2, 267],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 356] }
+)
+****************************************************************************************************
+val data: HeteroData(
+  drug={ x=[222, 12] },
+  protein={ x=[94, 20] },
+  (drug, interaction, protein)={
+    edge_index=[2, 445],
+    edge_label=[189],
+    edge_label_index=[2, 189],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 445] }
+)
+****************************************************************************************************
+test data: HeteroData(
+  drug={ x=[222, 12] },
+  protein={ x=[94, 20] },
+  (drug, interaction, protein)={
+    edge_index=[2, 508],
+    edge_label=[378],
+    edge_label_index=[2, 378],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 508] }
+)
+****************************************************************************************************
+model: GNN(
+  (lin_dict): ModuleDict(
+    (drug): Linear(-1, 64, bias=True)
+    (protein): Linear(-1, 64, bias=True)
+  )
+  (convs): ModuleList(
+    (0-1): 2 x GCNConv(64, 64)
+  )
+  (lin): Linear(128, 1, bias=True)
+)
+Epoch: 51, Loss: 0.5699
+Epoch: 101, Loss: 0.5666
+Epoch: 151, Loss: 0.5666
+Epoch: 201, Loss: 0.5666
+Epoch: 251, Loss: 0.5666
+Epoch: 301, Loss: 0.5666
+Epoch: 351, Loss: 0.5666
+Epoch: 401, Loss: 0.5666
+Epoch: 451, Loss: 0.5666
+Epoch: 501, Loss: 0.5666
+Epoch: 551, Loss: 0.5666
+Epoch: 601, Loss: 0.5666
+Epoch: 651, Loss: 0.5666
+Epoch: 701, Loss: 0.5666
+Epoch: 751, Loss: 0.5667
+Epoch: 801, Loss: 0.5666
+Epoch: 851, Loss: 0.5666
+Epoch: 901, Loss: 0.5666
+Epoch: 951, Loss: 0.5666
+Epoch: 1001, Loss: 0.5666
+avg Test Accuracy: 0.7196  avg Test AUC: 0.7261  avg Test AUC: 0.5655

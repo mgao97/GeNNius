@@ -112,8 +112,19 @@ def main():
     del data['protein', 'rev_interaction', 'drug'].edge_label  
     
     import random
-    random.seed(42)
-    torch.manual_seed(42)
+    # random.seed(42)
+    # torch.manual_seed(42)
+    # split = T.RandomLinkSplit(
+    #     num_val= 0.1,
+    #     num_test= 0.2, 
+    #     is_undirected= True,
+    #     add_negative_train_samples= True, # False for: Not adding negative links to train
+    #     neg_sampling_ratio= 2.0, # ratio of negative sampling is 0
+    #     disjoint_train_ratio = 0.2, #
+    #     edge_types=[('drug', 'interaction', 'protein')],
+    #     rev_edge_types=[('protein', 'rev_interaction', 'drug')],
+    #     split_labels=False
+    # )
     split = T.RandomLinkSplit(
         num_val= 0.1,
         num_test= 0.2, 

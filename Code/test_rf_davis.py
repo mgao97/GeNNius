@@ -78,7 +78,7 @@ print('data:', data)
 print('='*100)
 
 import random
-random.seed(42)
+# random.seed(42)
 # torch.manual_seed(42)
 
 # del data['protein', 'rev_interaction', 'drug'].edge_label 

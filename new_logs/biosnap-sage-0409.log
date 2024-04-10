@@ -1,0 +1,96 @@
+====================================================================================================
+data: HeteroData(
+  drug={
+    node_id=[4499],
+    x=[4499, 12],
+  },
+  protein={
+    node_id=[2113],
+    x=[2113, 20],
+  },
+  (drug, interaction, protein)={ edge_index=[2, 13838] },
+  (protein, rev_interaction, drug)={ edge_index=[2, 13838] }
+)
+====================================================================================================
+****************************************************************************************************
+train data: HeteroData(
+  drug={
+    node_id=[4499],
+    x=[4499, 12],
+  },
+  protein={
+    node_id=[2113],
+    x=[2113, 20],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 7751],
+    edge_label=[5811],
+    edge_label_index=[2, 5811],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 7751] }
+)
+****************************************************************************************************
+val data: HeteroData(
+  drug={
+    node_id=[4499],
+    x=[4499, 12],
+  },
+  protein={
+    node_id=[2113],
+    x=[2113, 20],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 9688],
+    edge_label=[4149],
+    edge_label_index=[2, 4149],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 9688] }
+)
+****************************************************************************************************
+test data: HeteroData(
+  drug={
+    node_id=[4499],
+    x=[4499, 12],
+  },
+  protein={
+    node_id=[2113],
+    x=[2113, 20],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 11071],
+    edge_label=[8301],
+    edge_label_index=[2, 8301],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 11071] }
+)
+****************************************************************************************************
+model: GNN(
+  (lin_dict): ModuleDict(
+    (drug): Linear(-1, 64, bias=True)
+    (protein): Linear(-1, 64, bias=True)
+  )
+  (conv1): SAGEConv((-1, -1), 64, aggr=mean)
+  (conv2): SAGEConv((-1, -1), 1, aggr=mean)
+  (lin): Linear(2, 1, bias=True)
+)
+Epoch: 51, Loss: 0.5640
+Epoch: 101, Loss: 0.5395
+Epoch: 151, Loss: 0.5266
+Epoch: 201, Loss: 0.5167
+Epoch: 251, Loss: 0.5046
+Epoch: 301, Loss: 0.4972
+Epoch: 351, Loss: 0.4943
+Epoch: 401, Loss: 0.4943
+Epoch: 451, Loss: 0.4896
+Epoch: 501, Loss: 0.4874
+Epoch: 551, Loss: 0.4862
+Epoch: 601, Loss: 0.4853
+Epoch: 651, Loss: 0.4840
+Epoch: 701, Loss: 0.4845
+Epoch: 751, Loss: 0.4825
+Epoch: 801, Loss: 0.4849
+Epoch: 851, Loss: 0.4804
+Epoch: 901, Loss: 0.4793
+Epoch: 951, Loss: 0.4765
+Epoch: 1001, Loss: 0.4749
+avg Test Accuracy: 0.7593  avg Test AUC: 0.7910  avg Test AUC: 0.6666

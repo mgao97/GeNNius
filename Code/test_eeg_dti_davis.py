@@ -32,7 +32,7 @@ from warnings import filterwarnings
 filterwarnings("ignore")
 
 
-seed = 0
+seed = 42
 random.seed(seed)
 torch.manual_seed(seed)
 torch.cuda.manual_seed(seed)
@@ -261,7 +261,7 @@ print('*'*100)
 # 定义模型参数
 hidden_channels = 64
 out_channels = 1
-num_heads = 4
+num_heads = 2
 num_layers = 3
 
 

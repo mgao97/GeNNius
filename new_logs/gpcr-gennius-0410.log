@@ -1,0 +1,66 @@
+[INFO] hidden channels: 64]
+Dataset:  gpcr
+reading from Data/GPCR/hetero_data_gpcr.pt
+hd:  64
+cuda
+Data is cuda?: True
+data HeteroData(
+  drug={ x=[222, 12] },
+  protein={ x=[94, 20] },
+  (drug, interaction, protein)={ edge_index=[2, 634] },
+  (protein, rev_interaction, drug)={ edge_index=[2, 634] }
+)
+train_data HeteroData(
+  drug={ x=[222, 12] },
+  protein={ x=[94, 20] },
+  (drug, interaction, protein)={
+    edge_index=[2, 356],
+    edge_label=[267],
+    edge_label_index=[2, 267],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 356] }
+)
+model: Model(
+  (encoder): GraphModule(
+    (conv_in): ModuleDict(
+      (drug__interaction__protein): SAGEConv((-1, -1), 64, aggr=sum)
+      (protein__rev_interaction__drug): SAGEConv((-1, -1), 64, aggr=sum)
+    )
+    (act): ModuleDict(
+      (drug): Tanh()
+      (protein): Tanh()
+    )
+    (dropout): ModuleDict(
+      (drug): Dropout(p=0.2, inplace=False)
+      (protein): Dropout(p=0.2, inplace=False)
+    )
+    (conv_med): ModuleDict(
+      (drug__interaction__protein): SAGEConv((-1, -1), 64, aggr=sum)
+      (protein__rev_interaction__drug): SAGEConv((-1, -1), 64, aggr=sum)
+    )
+    (conv_out): ModuleDict(
+      (drug__interaction__protein): SAGEConv((-1, -1), 64, aggr=sum)
+      (protein__rev_interaction__drug): SAGEConv((-1, -1), 64, aggr=sum)
+    )
+  )
+  (decoder): EdgeClassifier(
+    (lin1): Linear(in_features=128, out_features=64, bias=True)
+    (lin2): Linear(in_features=64, out_features=1, bias=True)
+  )
+)
+early stopped at epoch  41
+early stopped at epoch  41
+early stopped at epoch  41
+early stopped at epoch  41
+early stopped at epoch  41
+early stopped at epoch  41
+early stopped at epoch  41
+early stopped at epoch  41
+early stopped at epoch  41
+early stopped at epoch  41
+ 
+avg Test Accuracy: 0.7516  avg Test AUC: 0.8291  avg Test PRE: 0.6891
+Elapsed time 0.0544 min
+plotting loss over epochs
+plotting loss over epochs
+plotting loss over epochs

@@ -1,0 +1,98 @@
+====================================================================================================
+data: HeteroData(
+  drug={
+    node_id=[6823],
+    x=[6823, 12],
+  },
+  protein={
+    node_id=[4650],
+    x=[4650, 20],
+  },
+  (drug, interaction, protein)={ edge_index=[2, 23705] },
+  (protein, rev_interaction, drug)={ edge_index=[2, 23705] }
+)
+====================================================================================================
+****************************************************************************************************
+train data: HeteroData(
+  drug={
+    node_id=[6823],
+    x=[6823, 12],
+  },
+  protein={
+    node_id=[4650],
+    x=[4650, 20],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 13276],
+    edge_label=[9954],
+    edge_label_index=[2, 9954],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 13276] }
+)
+****************************************************************************************************
+val data: HeteroData(
+  drug={
+    node_id=[6823],
+    x=[6823, 12],
+  },
+  protein={
+    node_id=[4650],
+    x=[4650, 20],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 16594],
+    edge_label=[7110],
+    edge_label_index=[2, 7110],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 16594] }
+)
+****************************************************************************************************
+test data: HeteroData(
+  drug={
+    node_id=[6823],
+    x=[6823, 12],
+  },
+  protein={
+    node_id=[4650],
+    x=[4650, 20],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 18964],
+    edge_label=[14223],
+    edge_label_index=[2, 14223],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 18964] }
+)
+****************************************************************************************************
+model: GAT(
+  (lin_dict): ModuleDict(
+    (drug): Linear(-1, 64, bias=True)
+    (protein): Linear(-1, 64, bias=True)
+  )
+  (conv1): GATConv((-1, -1), 64, heads=1)
+  (lin1): Linear(-1, 64, bias=True)
+  (conv2): GATConv((-1, -1), 1, heads=1)
+  (lin2): Linear(-1, 1, bias=True)
+  (lin): Linear(2, 1, bias=True)
+)
+Epoch: 51, Loss: 0.6210
+Epoch: 101, Loss: 0.5030
+Epoch: 151, Loss: 0.4828
+Epoch: 201, Loss: 0.4736
+Epoch: 251, Loss: 0.4695
+Epoch: 301, Loss: 0.4697
+Epoch: 351, Loss: 0.4795
+Epoch: 401, Loss: 0.4681
+Epoch: 451, Loss: 0.4680
+Epoch: 501, Loss: 0.4675
+Epoch: 551, Loss: 0.4680
+Epoch: 601, Loss: 0.4733
+Epoch: 651, Loss: 0.4681
+Epoch: 701, Loss: 0.4665
+Epoch: 751, Loss: 0.4664
+Epoch: 801, Loss: 0.4664
+Epoch: 851, Loss: 0.4650
+Epoch: 901, Loss: 0.4683
+Epoch: 951, Loss: 0.4678
+Epoch: 1001, Loss: 0.4646
+avg Test Accuracy: 0.8032  avg Test AUC: 0.8338  avg Test AUC: 0.7613

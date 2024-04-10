@@ -281,10 +281,10 @@ test_edge_x, test_y = test_edge_x.cpu(), test_y.cpu()
 rf_model = RandomForestClassifier()
 
 # 定义模型参数
-hidden_channels = 64
+hidden_channels = 16
 out_channels = 1
 num_heads = 2
-num_layers = 3
+num_layers = 4
 
 
 # 初始化模型

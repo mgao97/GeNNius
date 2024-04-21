@@ -31,7 +31,6 @@ from scipy.sparse import coo_matrix
 from warnings import filterwarnings
 filterwarnings("ignore")
 
-
 seed = 42
 random.seed(seed)
 torch.manual_seed(seed)
@@ -60,71 +59,8 @@ import torch.nn.functional as F
 from torch.optim import Adam
 from sklearn.metrics import accuracy_score,precision_score,roc_auc_score
 
-
-# parser = argparse.ArgumentParser(description='Training GNN on gene cell graph')
-# parser.add_argument('--data_path', type=str)
-# parser.add_argument('--epoch', type=int, default=100)
-# # sampling times
-# parser.add_argument('--n_batch', type=int, default=25,
-#                     help='Number of batch (sampled graphs) for each epoch')
-
-# parser.add_argument('--drug_rate', type=float, default=0.9)
-# parser.add_argument('--protein_rate', type=float, default=0.3)
-
-# # Result
-# parser.add_argument('--data_name', type=str,
-#                     help='The name for dataset')
-# parser.add_argument('--result_dir', type=str,
-#                     help='The address for storing the models and optimization results.')
-# parser.add_argument('--reduction', type=str, default='raw',
-#                     help='the method for feature extraction, pca, raw, AE')
-# parser.add_argument('--in_dim', type=int, default=256,
-#                     help='Number of hidden dimension (AE)')
-# # GAE
-# parser.add_argument('--n_hid', type=int,default=64,
-#                     help='Number of hidden dimension')
-# parser.add_argument('--n_heads', type=int,default=4,
-#                     help='Number of attention head')
-# parser.add_argument('--n_layers', type=int, default=2,
-#                     help='Number of GNN layers')
-# parser.add_argument('--dropout', type=float, default=0,
-#                     help='Dropout ratio')
-# parser.add_argument('--lr', type=float,default=0.01,
-#                     help='learning rate')
-
-# parser.add_argument('--batch_size', type=int,default=16,
-#                     help='Number of output nodes for training')
-# parser.add_argument('--layer_type', type=str, default='hgt',
-#                     help='the layer type for GAE')
-# parser.add_argument('--loss', type=str, default='kl',
-#                     help='the loss for GAE')
-# parser.add_argument('--factor', type=float, default='0.5',
-#                     help='the attenuation factor')
-# parser.add_argument('--patience', type=int, default=5,
-#                     help='patience')
-# parser.add_argument('--rf', type=float, default='0.0',
-#                     help='the weights of regularization')
-# parser.add_argument('--cuda', type=int, default=0,
-#                     help='cuda 0 use GPU0 else cpu ')
-# parser.add_argument('--rep', type=str, default='T',
-#                     help='precision truncation')
-# parser.add_argument('--AEtype', type=int, default=1,
-#                     help='AEtype:1 embedding node autoencoder 2:HGT node autoencode')
-# parser.add_argument('--optimizer', type=str, default='adamw',
-#                     help='optimizer')
-
-# args = parser.parse_args()
-
-
-
 import random
-
-
-##########---------------------------------------
 import os.path as osp
-
-import torch
-import torch.nn.functional as F
 
 import torch_geometric.transforms as T
 from torch_geometric.datasets import DBLP
@@ -187,6 +123,29 @@ def train(model, data, optimizer, device):
 
     return loss.item()
 
+def eval(model, data, device):
+    model.eval()
+    min_valid_loss = np.inf
+
+    # 获取测试数据
+    x_dict = {'drug': data['drug'].x.to(device), 'protein': data['protein'].x.to(device)}
+    edge_index_dict = {('drug','interaction','protein'): data[('drug','interaction','protein')].edge_index.to(device)}
+                    #    ('protein','rev_interaction','drug'): data[('protein','rev_interaction','drug')].edge_index.to(device)}
+    labels = data[('drug','interaction','protein')].edge_label.to(device)
+    edge_label_index_dict = {('drug','interaction','protein'): data[('drug','interaction','protein')].edge_label_index.to(device) }
+
+    # 前向传播
+    with torch.no_grad():
+        x_dict, output = model(x_dict, edge_index_dict, edge_label_index_dict)
+
+        # 计算损失
+        val_loss = F.binary_cross_entropy(output.squeeze(), labels.float())
+        if val_loss < min_valid_loss:
+            torch.save(model.state_dict(),'hgt-xgboost.model')
+            min_valid_loss = val_loss
+
+    return val_loss.item()
+
 def test(model, data, device):
     model.eval()
 
@@ -202,15 +161,8 @@ def test(model, data, device):
         x_dict, output = model(x_dict, edge_index_dict, edge_label_index_dict)
     
     return x_dict
-    # # 计算预测结果
-    # pred = (output >= 0.5).long()
+    
 
-    # # 计算准确率
-    # accuracy = accuracy_score(labels.cpu(), pred.cpu())
-    # auc = roc_auc_score(labels.cpu(), output.cpu())
-    # precision = average_precision_score(labels.cpu(), output.cpu())
-
-    # return accuracy, auc, precision
 
 def data_divide(data):
     labels = data[('drug','interaction','protein')].edge_label.to(device)
@@ -238,7 +190,10 @@ def data_divide(data):
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-path = 'Data/DRUGBANK/hetero_data_drugbank.pt'
+# 数据加载
+# path = 'Data/DRUGBANK/hetero_data_drugbank.pt'
+
+path = 'Data/BINDINGDB/hetero_data_bindingdb.pt'
 data = torch.load(path)
 data = T.ToUndirected()(data)
 
@@ -246,15 +201,15 @@ print('='*100)
 print('data:', data)
 print('='*100)
 
+
+
 import random
 random.seed(42)
 torch.manual_seed(42)
-# del data['protein', 'rev_interaction', 'drug'].edge_label 
+
 transform = T.RandomLinkSplit(
     num_val=0.1,
     num_test=0.2,
-    # num_val=0.2,
-    # num_test=0.3,
     is_undirected=True,
     disjoint_train_ratio=0.2,
     neg_sampling_ratio=2.0,
@@ -294,20 +249,17 @@ num_layers = 2
 model = HGT(hidden_channels, out_channels, num_heads, num_layers).to(device)
 print('model:',model)
 
-# train_x_hgt_emb = model(train_data)
-# val_x_hgt_emb = model(val_data)
-# test_x_hgt_emb = model(test_data)
-
 # 定义优化器
 optimizer = Adam(model.parameters(), lr=0.05)
 
-
 # 初始化逻辑回归模型
-rf_model = RandomForestClassifier()
-
+# rf_model = RandomForestClassifier()
+import xgboost as xgb
+xgboost_model = xgb.XGBClassifier(learning_rate=0.1, n_estimators=1000, max_depth=5, gamma=1, subsample=0.8)
 
 acc_list, auc_list, pre_list = [],[],[]
 run_time = 10
+
 
 # 测试模型
 train_x_dict = test(model, train_data, device)
@@ -338,27 +290,26 @@ con_edge_x = torch.stack(test_edge_x_list, dim=0)
 test_edge_x_final = torch.cat((con_edge_x,torch.tensor(test_edge_x).to(device)),dim=1).detach().to('cpu')
 
 
+
+# 模型训练与效果测试
 for i in range(run_time):
     # 训练模型
     init_time = time.time()
-    for epoch in range(1,101):  # 假设训练10个epoch 1001->101
+    for epoch in range(1,1001):  # 假设训练10个epoch 1001->101
         loss = train(model, train_data, optimizer, device)
-        if epoch % 5 == 0:
-            print(f'Epoch: {epoch+1}, Loss: {loss:.4f}')
+        val_loss = eval(model, val_data, device)
 
-    
+        if epoch % 100 == 0:
+            print(f'Time {i}, Epoch: {epoch+1}, Train Loss: {loss:.4f}, Val Loss: {val_loss:.4f}')
 
-    rf_model.fit(train_edge_x_final, train_y)
+
+    xgboost_model.fit(train_edge_x_final, train_y)
     end_time = time.time()
     print(f"Elapsed time {(end_time-init_time)/60:.4f} min")
 
-
-
     # 进行预测
-    y_pred_proba = rf_model.predict_proba(test_edge_x_final)[:, 1]
-    y_pred = rf_model.predict(test_edge_x_final)
-
-    
+    y_pred_proba = xgboost_model.predict_proba(test_edge_x_final)[:, 1]
+    y_pred = xgboost_model.predict(test_edge_x_final)
 
 
     print('test data and predicted data:\n')

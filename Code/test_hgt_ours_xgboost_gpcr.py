@@ -31,6 +31,17 @@ from scipy.sparse import coo_matrix
 from warnings import filterwarnings
 filterwarnings("ignore")
 
+seed = 42
+random.seed(seed)
+torch.manual_seed(seed)
+torch.cuda.manual_seed(seed)
+torch.cuda.manual_seed_all(seed)
+np.random.seed(seed)
+os.environ['PYTHONHASHSEED'] = str(seed)
+
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+
 
 import torch
 from torch_geometric.data import Data
@@ -41,7 +52,6 @@ from torch_geometric.nn import GATConv
 # from torch_geometric.utils import accuracy
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-
 
     
 import torch
@@ -177,28 +187,25 @@ def data_divide(data):
 
     return edge_x, labels, edge_indices
 
-# 初始化
-seed = 42
-random.seed(seed)
-torch.manual_seed(seed)
-torch.cuda.manual_seed(seed)
-torch.cuda.manual_seed_all(seed)
-np.random.seed(seed)
-os.environ['PYTHONHASHSEED'] = str(seed)
-
-torch.backends.cudnn.deterministic = True
-torch.backends.cudnn.benchmark = False
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # 数据加载
-path = 'Data/DRUGBANK/hetero_data_drugbank.pt'
+# path = 'Data/DRUGBANK/hetero_data_drugbank.pt'
+
+path = 'Data/GPCR/hetero_data_gpcr.pt'
 data = torch.load(path)
 data = T.ToUndirected()(data)
 
 print('='*100)
 print('data:', data)
 print('='*100)
+
+
+
+import random
+random.seed(42)
+torch.manual_seed(42)
 
 transform = T.RandomLinkSplit(
     num_val=0.1,
@@ -243,17 +250,44 @@ model = HGT(hidden_channels, out_channels, num_heads, num_layers).to(device)
 print('model:',model)
 
 # 定义优化器
-optimizer = Adam(model.parameters(), lr=0.001, weight_decay=5e-4)
-min_valid_loss = np.inf
+optimizer = Adam(model.parameters(), lr=0.05)
 
 # 初始化逻辑回归模型
 # rf_model = RandomForestClassifier()
 import xgboost as xgb
-xgboost_model = xgb.XGBClassifier(learning_rate=0.1, max_depth=5, gamma=1, subsample=0.8)
+xgboost_model = xgb.XGBClassifier(learning_rate=0.1, n_estimators=1000, max_depth=5, gamma=1, subsample=0.8)
 
 acc_list, auc_list, pre_list = [],[],[]
 run_time = 10
 
+
+# 测试模型
+train_x_dict = test(model, train_data, device)
+
+train_edge_x_list = []
+# 遍历所有边的索引
+for edge_idx in train_edge_indices:
+    # 从test_data中提取边的特征并拼接
+    edge_idx_x = torch.cat((train_x_dict['drug'][edge_idx[0]], train_x_dict['protein'][edge_idx[1]]), dim=0)
+    train_edge_x_list.append(edge_idx_x)
+# 将边特征列表转换为张量
+edge_x = torch.stack(train_edge_x_list, dim=0)
+
+train_edge_x_final = torch.cat((edge_x,torch.tensor(train_edge_x).to(device)),dim=1).detach().to('cpu')
+
+# 测试模型
+test_x_dict = test(model, test_data, device)
+
+test_edge_x_list = []
+# 遍历所有边的索引
+for edge_idx in test_edge_indices:
+    # 从test_data中提取边的特征并拼接
+    edge_idx_x = torch.cat((test_x_dict['drug'][edge_idx[0]], test_x_dict['protein'][edge_idx[1]]), dim=0)
+    test_edge_x_list.append(edge_idx_x)
+# 将边特征列表转换为张量
+con_edge_x = torch.stack(test_edge_x_list, dim=0)
+
+test_edge_x_final = torch.cat((con_edge_x,torch.tensor(test_edge_x).to(device)),dim=1).detach().to('cpu')
 
 
 
@@ -268,40 +302,10 @@ for i in range(run_time):
         if epoch % 100 == 0:
             print(f'Time {i}, Epoch: {epoch+1}, Train Loss: {loss:.4f}, Val Loss: {val_loss:.4f}')
 
-    model.load_state_dict(torch.load('hgt-xgboost.model'))
-
-    # 训练数据
-    train_x_dict = test(model, train_data, device)
-
-    train_edge_x_list = []
-    # 遍历所有边的索引
-    for edge_idx in train_edge_indices:
-        # 从test_data中提取边的特征并拼接
-        edge_idx_x = torch.cat((train_x_dict['drug'][edge_idx[0]], train_x_dict['protein'][edge_idx[1]]), dim=0)
-        train_edge_x_list.append(edge_idx_x)
-    # 将边特征列表转换为张量
-    edge_x = torch.stack(train_edge_x_list, dim=0)
-
-    train_edge_x_final = torch.cat((edge_x,torch.tensor(train_edge_x).to(device)),dim=1).detach().to('cpu')
-
 
     xgboost_model.fit(train_edge_x_final, train_y)
     end_time = time.time()
     print(f"Elapsed time {(end_time-init_time)/60:.4f} min")
-
-    # 测试模型
-    test_x_dict = test(model, test_data, device)
-
-    test_edge_x_list = []
-    # 遍历所有边的索引
-    for edge_idx in test_edge_indices:
-        # 从test_data中提取边的特征并拼接
-        edge_idx_x = torch.cat((test_x_dict['drug'][edge_idx[0]], test_x_dict['protein'][edge_idx[1]]), dim=0)
-        test_edge_x_list.append(edge_idx_x)
-    # 将边特征列表转换为张量
-    con_edge_x = torch.stack(test_edge_x_list, dim=0)
-
-    test_edge_x_final = torch.cat((con_edge_x,torch.tensor(test_edge_x).to(device)),dim=1).detach().to('cpu')
 
     # 进行预测
     y_pred_proba = xgboost_model.predict_proba(test_edge_x_final)[:, 1]

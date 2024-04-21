@@ -1,0 +1,189 @@
+====================================================================================================
+data: HeteroData(
+  drug={ x=[222, 12] },
+  protein={ x=[94, 20] },
+  (drug, interaction, protein)={ edge_index=[2, 634] },
+  (protein, rev_interaction, drug)={ edge_index=[2, 634] }
+)
+====================================================================================================
+****************************************************************************************************
+train data: HeteroData(
+  drug={ x=[222, 12] },
+  protein={ x=[94, 20] },
+  (drug, interaction, protein)={
+    edge_index=[2, 356],
+    edge_label=[267],
+    edge_label_index=[2, 267],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 356] }
+)
+****************************************************************************************************
+val data: HeteroData(
+  drug={ x=[222, 12] },
+  protein={ x=[94, 20] },
+  (drug, interaction, protein)={
+    edge_index=[2, 445],
+    edge_label=[189],
+    edge_label_index=[2, 189],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 445] }
+)
+****************************************************************************************************
+test data: HeteroData(
+  drug={ x=[222, 12] },
+  protein={ x=[94, 20] },
+  (drug, interaction, protein)={
+    edge_index=[2, 508],
+    edge_label=[378],
+    edge_label_index=[2, 378],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 508] }
+)
+****************************************************************************************************
+edge_x: torch.Size([267, 32])
+labels: torch.Size([267])
+edge_x: torch.Size([189, 32])
+labels: torch.Size([189])
+edge_x: torch.Size([378, 32])
+labels: torch.Size([378])
+model: HGT(
+  (lin_dict): ModuleDict(
+    (drug): Linear(-1, 64, bias=True)
+    (protein): Linear(-1, 64, bias=True)
+  )
+  (convs): ModuleList(
+    (0-1): 2 x HGTConv(-1, 64, heads=2)
+  )
+  (lin): Linear(128, 1, bias=True)
+)
+Time 0, Epoch: 101, Train Loss: 0.4704, Val Loss: 0.6620
+Time 0, Epoch: 201, Train Loss: 0.4436, Val Loss: 0.7596
+Time 0, Epoch: 301, Train Loss: 0.5127, Val Loss: 0.5767
+Time 0, Epoch: 401, Train Loss: 0.4875, Val Loss: 0.5987
+Time 0, Epoch: 501, Train Loss: 0.4908, Val Loss: 0.5831
+Time 0, Epoch: 601, Train Loss: 0.4779, Val Loss: 0.5887
+Time 0, Epoch: 701, Train Loss: 0.4792, Val Loss: 0.6031
+Time 0, Epoch: 801, Train Loss: 0.4722, Val Loss: 0.6021
+Time 0, Epoch: 901, Train Loss: 0.4690, Val Loss: 0.5998
+Time 0, Epoch: 1001, Train Loss: 0.4667, Val Loss: 0.6028
+Elapsed time 0.1056 min
+test data and predicted data:
+
+Time 1, Epoch: 101, Train Loss: 0.4654, Val Loss: 0.6286
+Time 1, Epoch: 201, Train Loss: 0.4560, Val Loss: 0.6021
+Time 1, Epoch: 301, Train Loss: 0.4496, Val Loss: 0.6045
+Time 1, Epoch: 401, Train Loss: 0.4434, Val Loss: 0.5977
+Time 1, Epoch: 501, Train Loss: 0.4397, Val Loss: 0.6132
+Time 1, Epoch: 601, Train Loss: 0.4406, Val Loss: 0.6283
+Time 1, Epoch: 701, Train Loss: 0.4408, Val Loss: 0.6522
+Time 1, Epoch: 801, Train Loss: 0.4373, Val Loss: 0.6550
+Time 1, Epoch: 901, Train Loss: 0.4415, Val Loss: 0.6336
+Time 1, Epoch: 1001, Train Loss: 0.4355, Val Loss: 0.6699
+Elapsed time 0.1056 min
+test data and predicted data:
+
+Time 2, Epoch: 101, Train Loss: 0.4318, Val Loss: 0.6929
+Time 2, Epoch: 201, Train Loss: 0.4300, Val Loss: 0.7115
+Time 2, Epoch: 301, Train Loss: 0.4276, Val Loss: 0.7238
+Time 2, Epoch: 401, Train Loss: 0.4530, Val Loss: 0.5928
+Time 2, Epoch: 501, Train Loss: 0.4447, Val Loss: 0.6123
+Time 2, Epoch: 601, Train Loss: 0.4545, Val Loss: 0.5708
+Time 2, Epoch: 701, Train Loss: 0.4268, Val Loss: 0.5834
+Time 2, Epoch: 801, Train Loss: 0.4277, Val Loss: 0.5851
+Time 2, Epoch: 901, Train Loss: 0.4292, Val Loss: 0.5929
+Time 2, Epoch: 1001, Train Loss: 0.4239, Val Loss: 0.5995
+Elapsed time 0.1053 min
+test data and predicted data:
+
+Time 3, Epoch: 101, Train Loss: 0.4208, Val Loss: 0.6062
+Time 3, Epoch: 201, Train Loss: 0.4226, Val Loss: 0.6028
+Time 3, Epoch: 301, Train Loss: 0.4205, Val Loss: 0.6055
+Time 3, Epoch: 401, Train Loss: 0.4273, Val Loss: 0.6110
+Time 3, Epoch: 501, Train Loss: 0.4192, Val Loss: 0.6080
+Time 3, Epoch: 601, Train Loss: 0.4195, Val Loss: 0.6173
+Time 3, Epoch: 701, Train Loss: 0.4191, Val Loss: 0.6118
+Time 3, Epoch: 801, Train Loss: 0.4201, Val Loss: 0.6144
+Time 3, Epoch: 901, Train Loss: 0.4223, Val Loss: 0.6284
+Time 3, Epoch: 1001, Train Loss: 0.4225, Val Loss: 0.6231
+Elapsed time 0.1039 min
+test data and predicted data:
+
+Time 4, Epoch: 101, Train Loss: 0.4181, Val Loss: 0.6183
+Time 4, Epoch: 201, Train Loss: 0.4180, Val Loss: 0.6194
+Time 4, Epoch: 301, Train Loss: 0.4211, Val Loss: 0.6231
+Time 4, Epoch: 401, Train Loss: 0.4182, Val Loss: 0.6231
+Time 4, Epoch: 501, Train Loss: 0.4274, Val Loss: 0.5936
+Time 4, Epoch: 601, Train Loss: 0.4195, Val Loss: 0.6193
+Time 4, Epoch: 701, Train Loss: 0.4185, Val Loss: 0.6237
+Time 4, Epoch: 801, Train Loss: 0.4184, Val Loss: 0.6246
+Time 4, Epoch: 901, Train Loss: 0.4236, Val Loss: 0.6114
+Time 4, Epoch: 1001, Train Loss: 0.4213, Val Loss: 0.6261
+Elapsed time 0.1069 min
+test data and predicted data:
+
+Time 5, Epoch: 101, Train Loss: 0.4225, Val Loss: 0.6245
+Time 5, Epoch: 201, Train Loss: 0.4171, Val Loss: 0.6264
+Time 5, Epoch: 301, Train Loss: 0.6264, Val Loss: 0.6580
+Time 5, Epoch: 401, Train Loss: 0.6184, Val Loss: 0.6646
+Time 5, Epoch: 501, Train Loss: 0.6093, Val Loss: 0.6709
+Time 5, Epoch: 601, Train Loss: 0.6022, Val Loss: 0.6695
+Time 5, Epoch: 701, Train Loss: 0.5968, Val Loss: 0.6657
+Time 5, Epoch: 801, Train Loss: 0.5926, Val Loss: 0.6618
+Time 5, Epoch: 901, Train Loss: 0.5891, Val Loss: 0.6580
+Time 5, Epoch: 1001, Train Loss: 0.5863, Val Loss: 0.6546
+Elapsed time 0.1018 min
+test data and predicted data:
+
+Time 6, Epoch: 101, Train Loss: 0.5842, Val Loss: 0.6518
+Time 6, Epoch: 201, Train Loss: 0.5825, Val Loss: 0.6497
+Time 6, Epoch: 301, Train Loss: 0.5812, Val Loss: 0.6485
+Time 6, Epoch: 401, Train Loss: 0.5802, Val Loss: 0.6478
+Time 6, Epoch: 501, Train Loss: 0.5794, Val Loss: 0.6475
+Time 6, Epoch: 601, Train Loss: 0.5788, Val Loss: 0.6476
+Time 6, Epoch: 701, Train Loss: 0.5783, Val Loss: 0.6478
+Time 6, Epoch: 801, Train Loss: 0.5780, Val Loss: 0.6481
+Time 6, Epoch: 901, Train Loss: 0.5777, Val Loss: 0.6484
+Time 6, Epoch: 1001, Train Loss: 0.5775, Val Loss: 0.6487
+Elapsed time 0.1009 min
+test data and predicted data:
+
+Time 7, Epoch: 101, Train Loss: 0.5774, Val Loss: 0.6489
+Time 7, Epoch: 201, Train Loss: 0.5773, Val Loss: 0.6492
+Time 7, Epoch: 301, Train Loss: 0.5773, Val Loss: 0.6495
+Time 7, Epoch: 401, Train Loss: 0.5772, Val Loss: 0.6492
+Time 7, Epoch: 501, Train Loss: 0.5772, Val Loss: 0.6499
+Time 7, Epoch: 601, Train Loss: 0.5776, Val Loss: 0.6471
+Time 7, Epoch: 701, Train Loss: 0.6106, Val Loss: 0.7375
+Time 7, Epoch: 801, Train Loss: 0.6254, Val Loss: 0.7027
+Time 7, Epoch: 901, Train Loss: 0.5822, Val Loss: 0.6391
+Time 7, Epoch: 1001, Train Loss: 0.5803, Val Loss: 0.6414
+Elapsed time 0.1009 min
+test data and predicted data:
+
+Time 8, Epoch: 101, Train Loss: 0.5822, Val Loss: 0.6475
+Time 8, Epoch: 201, Train Loss: 0.5827, Val Loss: 0.6395
+Time 8, Epoch: 301, Train Loss: 0.5888, Val Loss: 0.6524
+Time 8, Epoch: 401, Train Loss: 0.5805, Val Loss: 0.6466
+Time 8, Epoch: 501, Train Loss: 0.5814, Val Loss: 0.6392
+Time 8, Epoch: 601, Train Loss: 0.5803, Val Loss: 0.6456
+Time 8, Epoch: 701, Train Loss: 0.6041, Val Loss: 0.6595
+Time 8, Epoch: 801, Train Loss: 0.5881, Val Loss: 0.6575
+Time 8, Epoch: 901, Train Loss: 0.5803, Val Loss: 0.6425
+Time 8, Epoch: 1001, Train Loss: 0.5808, Val Loss: 0.6411
+Elapsed time 0.1017 min
+test data and predicted data:
+
+Time 9, Epoch: 101, Train Loss: 0.5818, Val Loss: 0.6371
+Time 9, Epoch: 201, Train Loss: 0.5828, Val Loss: 0.6483
+Time 9, Epoch: 301, Train Loss: 0.5847, Val Loss: 0.6389
+Time 9, Epoch: 401, Train Loss: 0.5939, Val Loss: 0.6422
+Time 9, Epoch: 501, Train Loss: 0.5823, Val Loss: 0.6360
+Time 9, Epoch: 601, Train Loss: 0.5926, Val Loss: 0.6648
+Time 9, Epoch: 701, Train Loss: 0.5823, Val Loss: 0.6405
+Time 9, Epoch: 801, Train Loss: 0.5964, Val Loss: 0.6401
+Time 9, Epoch: 901, Train Loss: 0.5888, Val Loss: 0.6361
+Time 9, Epoch: 1001, Train Loss: 0.5835, Val Loss: 0.6629
+Elapsed time 0.1013 min
+test data and predicted data:
+
+avg Test Accuracy: 0.7646  avg Test AUC: 0.8044  avg Test PRE: 0.6796

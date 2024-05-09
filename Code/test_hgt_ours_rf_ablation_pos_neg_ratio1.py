@@ -257,7 +257,7 @@ transform = T.RandomLinkSplit(
     # num_test=0.3,
     is_undirected=True,
     disjoint_train_ratio=0.2,
-    neg_sampling_ratio=2.0,
+    neg_sampling_ratio=10.0,
     add_negative_train_samples=True,
     edge_types=("drug", "interaction", "protein"),
     rev_edge_types=("protein", "rev_interaction", "drug"), 
@@ -299,7 +299,7 @@ print('model:',model)
 # test_x_hgt_emb = model(test_data)
 
 # 定义优化器
-optimizer = Adam(model.parameters(), lr=0.001)
+optimizer = Adam(model.parameters(), lr=0.05)
 
 
 # 初始化逻辑回归模型

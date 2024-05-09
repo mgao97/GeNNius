@@ -1,0 +1,293 @@
+====================================================================================================
+data: HeteroData(
+  drug={
+    node_id=[3084],
+    x=[3084, 12],
+  },
+  protein={
+    node_id=[718],
+    x=[718, 20],
+  },
+  (drug, interaction, protein)={ edge_index=[2, 5937] },
+  (protein, rev_interaction, drug)={ edge_index=[2, 5937] }
+)
+====================================================================================================
+****************************************************************************************************
+train data: HeteroData(
+  drug={
+    node_id=[3084],
+    x=[3084, 12],
+  },
+  protein={
+    node_id=[718],
+    x=[718, 20],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 3326],
+    edge_label=[1662],
+    edge_label_index=[2, 1662],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 3326] }
+)
+****************************************************************************************************
+val data: HeteroData(
+  drug={
+    node_id=[3084],
+    x=[3084, 12],
+  },
+  protein={
+    node_id=[718],
+    x=[718, 20],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 4157],
+    edge_label=[1186],
+    edge_label_index=[2, 1186],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 4157] }
+)
+****************************************************************************************************
+test data: HeteroData(
+  drug={
+    node_id=[3084],
+    x=[3084, 12],
+  },
+  protein={
+    node_id=[718],
+    x=[718, 20],
+  },
+  (drug, interaction, protein)={
+    edge_index=[2, 4750],
+    edge_label=[2374],
+    edge_label_index=[2, 2374],
+  },
+  (protein, rev_interaction, drug)={ edge_index=[2, 4750] }
+)
+****************************************************************************************************
+edge_x: torch.Size([1662, 32])
+labels: torch.Size([1662])
+edge_x: torch.Size([1186, 32])
+labels: torch.Size([1186])
+edge_x: torch.Size([2374, 32])
+labels: torch.Size([2374])
+model: HGT(
+  (lin_dict): ModuleDict(
+    (drug): Linear(-1, 64, bias=True)
+    (protein): Linear(-1, 64, bias=True)
+  )
+  (convs): ModuleList(
+    (0-1): 2 x HGTConv(-1, 64, heads=2)
+  )
+  (lin): Linear(128, 1, bias=True)
+)
+Epoch: 51, Loss: 0.6860
+Epoch: 101, Loss: 0.6854
+Epoch: 151, Loss: 0.6835
+Epoch: 201, Loss: 0.6717
+Epoch: 251, Loss: 0.6570
+Epoch: 301, Loss: 0.6550
+Epoch: 351, Loss: 0.6537
+Epoch: 401, Loss: 0.6521
+Epoch: 451, Loss: 0.6504
+Epoch: 501, Loss: 0.6485
+Epoch: 551, Loss: 0.6467
+Epoch: 601, Loss: 0.6448
+Epoch: 651, Loss: 0.6415
+Epoch: 701, Loss: 0.6381
+Epoch: 751, Loss: 0.6349
+Epoch: 801, Loss: 0.6311
+Epoch: 851, Loss: 0.6279
+Epoch: 901, Loss: 0.6256
+Epoch: 951, Loss: 0.6242
+Epoch: 1001, Loss: 0.6236
+Elapsed time 0.0714 min
+Epoch: 51, Loss: 0.6209
+Epoch: 101, Loss: 0.6201
+Epoch: 151, Loss: 0.6186
+Epoch: 201, Loss: 0.6180
+Epoch: 251, Loss: 0.6163
+Epoch: 301, Loss: 0.6157
+Epoch: 351, Loss: 0.6170
+Epoch: 401, Loss: 0.6148
+Epoch: 451, Loss: 0.6152
+Epoch: 501, Loss: 0.6131
+Epoch: 551, Loss: 0.6124
+Epoch: 601, Loss: 0.6114
+Epoch: 651, Loss: 0.6121
+Epoch: 701, Loss: 0.6106
+Epoch: 751, Loss: 0.6120
+Epoch: 801, Loss: 0.6115
+Epoch: 851, Loss: 0.6095
+Epoch: 901, Loss: 0.6088
+Epoch: 951, Loss: 0.6094
+Epoch: 1001, Loss: 0.6089
+Elapsed time 0.0695 min
+Epoch: 51, Loss: 0.6079
+Epoch: 101, Loss: 0.6064
+Epoch: 151, Loss: 0.6056
+Epoch: 201, Loss: 0.6066
+Epoch: 251, Loss: 0.6046
+Epoch: 301, Loss: 0.6040
+Epoch: 351, Loss: 0.6069
+Epoch: 401, Loss: 0.6055
+Epoch: 451, Loss: 0.6027
+Epoch: 501, Loss: 0.6025
+Epoch: 551, Loss: 0.6056
+Epoch: 601, Loss: 0.6019
+Epoch: 651, Loss: 0.6025
+Epoch: 701, Loss: 0.6022
+Epoch: 751, Loss: 0.6023
+Epoch: 801, Loss: 0.6006
+Epoch: 851, Loss: 0.6007
+Epoch: 901, Loss: 0.5997
+Epoch: 951, Loss: 0.5996
+Epoch: 1001, Loss: 0.5988
+Elapsed time 0.0689 min
+Epoch: 51, Loss: 0.5994
+Epoch: 101, Loss: 0.5979
+Epoch: 151, Loss: 0.5982
+Epoch: 201, Loss: 0.5996
+Epoch: 251, Loss: 0.5977
+Epoch: 301, Loss: 0.5963
+Epoch: 351, Loss: 0.5960
+Epoch: 401, Loss: 0.5958
+Epoch: 451, Loss: 0.5953
+Epoch: 501, Loss: 0.5945
+Epoch: 551, Loss: 0.5967
+Epoch: 601, Loss: 0.5956
+Epoch: 651, Loss: 0.5946
+Epoch: 701, Loss: 0.5930
+Epoch: 751, Loss: 0.5926
+Epoch: 801, Loss: 0.5959
+Epoch: 851, Loss: 0.5952
+Epoch: 901, Loss: 0.5938
+Epoch: 951, Loss: 0.5914
+Epoch: 1001, Loss: 0.5909
+Elapsed time 0.0689 min
+Epoch: 51, Loss: 0.5909
+Epoch: 101, Loss: 0.5904
+Epoch: 151, Loss: 0.5948
+Epoch: 201, Loss: 0.5926
+Epoch: 251, Loss: 0.6089
+Epoch: 301, Loss: 0.5943
+Epoch: 351, Loss: 0.5934
+Epoch: 401, Loss: 0.5928
+Epoch: 451, Loss: 0.5922
+Epoch: 501, Loss: 0.5918
+Epoch: 551, Loss: 0.5914
+Epoch: 601, Loss: 0.5910
+Epoch: 651, Loss: 0.5907
+Epoch: 701, Loss: 0.5904
+Epoch: 751, Loss: 0.5902
+Epoch: 801, Loss: 0.5900
+Epoch: 851, Loss: 0.5897
+Epoch: 901, Loss: 0.5896
+Epoch: 951, Loss: 0.5894
+Epoch: 1001, Loss: 0.5892
+Elapsed time 0.0703 min
+Epoch: 51, Loss: 0.5891
+Epoch: 101, Loss: 0.5889
+Epoch: 151, Loss: 0.5887
+Epoch: 201, Loss: 0.5887
+Epoch: 251, Loss: 0.5885
+Epoch: 301, Loss: 0.5883
+Epoch: 351, Loss: 0.5882
+Epoch: 401, Loss: 0.5881
+Epoch: 451, Loss: 0.5881
+Epoch: 501, Loss: 0.5879
+Epoch: 551, Loss: 0.5879
+Epoch: 601, Loss: 0.5893
+Epoch: 651, Loss: 0.5878
+Epoch: 701, Loss: 0.5884
+Epoch: 751, Loss: 0.5887
+Epoch: 801, Loss: 0.5900
+Epoch: 851, Loss: 0.5877
+Epoch: 901, Loss: 0.5871
+Epoch: 951, Loss: 0.5883
+Epoch: 1001, Loss: 0.5878
+Elapsed time 0.0687 min
+Epoch: 51, Loss: 0.5869
+Epoch: 101, Loss: 0.5867
+Epoch: 151, Loss: 0.5870
+Epoch: 201, Loss: 0.5891
+Epoch: 251, Loss: 0.5875
+Epoch: 301, Loss: 0.5866
+Epoch: 351, Loss: 0.5868
+Epoch: 401, Loss: 0.5882
+Epoch: 451, Loss: 0.5872
+Epoch: 501, Loss: 0.5887
+Epoch: 551, Loss: 0.5880
+Epoch: 601, Loss: 0.5883
+Epoch: 651, Loss: 0.5873
+Epoch: 701, Loss: 0.5921
+Epoch: 751, Loss: 0.5855
+Epoch: 801, Loss: 0.5862
+Epoch: 851, Loss: 0.5861
+Epoch: 901, Loss: 0.5854
+Epoch: 951, Loss: 0.5852
+Epoch: 1001, Loss: 0.5930
+Elapsed time 0.0691 min
+Epoch: 51, Loss: 0.5981
+Epoch: 101, Loss: 0.6017
+Epoch: 151, Loss: 0.6602
+Epoch: 201, Loss: 0.5876
+Epoch: 251, Loss: 0.6105
+Epoch: 301, Loss: 0.5878
+Epoch: 351, Loss: 0.5888
+Epoch: 401, Loss: 0.5987
+Epoch: 451, Loss: 0.6037
+Epoch: 501, Loss: 0.5893
+Epoch: 551, Loss: 0.5898
+Epoch: 601, Loss: 0.5893
+Epoch: 651, Loss: 0.5882
+Epoch: 701, Loss: 0.5884
+Epoch: 751, Loss: 0.5863
+Epoch: 801, Loss: 0.6064
+Epoch: 851, Loss: 0.5871
+Epoch: 901, Loss: 0.5848
+Epoch: 951, Loss: 0.5871
+Epoch: 1001, Loss: 0.5867
+Elapsed time 0.0696 min
+Epoch: 51, Loss: 0.5910
+Epoch: 101, Loss: 0.5930
+Epoch: 151, Loss: 0.5913
+Epoch: 201, Loss: 0.6599
+Epoch: 251, Loss: 0.5926
+Epoch: 301, Loss: 0.5902
+Epoch: 351, Loss: 0.5927
+Epoch: 401, Loss: 0.6183
+Epoch: 451, Loss: 0.6650
+Epoch: 501, Loss: 0.8271
+Epoch: 551, Loss: 0.7035
+Epoch: 601, Loss: 0.6767
+Epoch: 651, Loss: 0.6576
+Epoch: 701, Loss: 0.6595
+Epoch: 751, Loss: 0.6537
+Epoch: 801, Loss: 0.6484
+Epoch: 851, Loss: 0.6379
+Epoch: 901, Loss: 0.6319
+Epoch: 951, Loss: 0.6383
+Epoch: 1001, Loss: 0.6342
+Elapsed time 0.0685 min
+Epoch: 51, Loss: 0.6634
+Epoch: 101, Loss: 0.6599
+Epoch: 151, Loss: 0.6622
+Epoch: 201, Loss: 0.6640
+Epoch: 251, Loss: 0.6608
+Epoch: 301, Loss: 0.6557
+Epoch: 351, Loss: 0.6546
+Epoch: 401, Loss: 0.6521
+Epoch: 451, Loss: 0.6525
+Epoch: 501, Loss: 0.6399
+Epoch: 551, Loss: 0.6352
+Epoch: 601, Loss: 0.6352
+Epoch: 651, Loss: 0.6375
+Epoch: 701, Loss: 0.6382
+Epoch: 751, Loss: 0.6426
+Epoch: 801, Loss: 0.6343
+Epoch: 851, Loss: 0.6341
+Epoch: 901, Loss: 0.6314
+Epoch: 951, Loss: 0.6411
+Epoch: 1001, Loss: 0.6364
+Elapsed time 0.0697 min
+avg Test Accuracy: 0.8371  avg Test AUC: 0.9151  avg Test PRE: 0.8594

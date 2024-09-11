@@ -54,6 +54,10 @@ from torch_geometric.nn import GATConv
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 
+import seaborn as sns
+from scipy.stats import pearsonr
+from scipy.stats import spearmanr
+
 parser = argparse.ArgumentParser(description='Training GNN on gene cell graph')
 parser.add_argument('--data_path', type=str)
 parser.add_argument('--epoch', type=int, default=100)
@@ -237,8 +241,26 @@ def test(model, data, device):
     auc = roc_auc_score(labels.cpu(), output.cpu())
     precision = average_precision_score(labels.cpu(), output.cpu())
 
+    # print('(output >= 0.5).float():',(output >= 0.5).float().cpu().numpy().tolist())
+
+    pearson_plot(label=labels.cpu().numpy().tolist(), pred_label= output.cpu().numpy().tolist(),dataname='drugbank')
+
     return accuracy, auc, precision
 
+
+def pearson_plot(label, pred_label,dataname):
+    df_data = pd.DataFrame(zip(label, pred_label))
+    # print('df_data',df_data)
+    df_data.rename(columns={0:'labels', 1:'predict_labels'}, inplace=True)
+    # print('in total: ' + str(len(df_data)) + ' drug-target pairs')
+    sns.set(style="white",font_scale=2.5)
+    g = sns.jointplot(x='predict_labels', y='labels', data=df_data, color='g',space=0,xlim=[0,1],ylim=[0,1],
+                    marginal_kws=dict(bins=14, kde=False,color='#c72e29'),
+                    kind='reg',
+                    height=5, ratio=3)
+    g.set_axis_labels('Predicted value', 'True value')
+    g.fig.set_size_inches(10,8)#设置图尺寸
+    g.savefig('pearson_'+dataname+'.pdf', dpi=600)
 
 
 

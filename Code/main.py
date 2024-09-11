@@ -168,11 +168,12 @@ def main():
     results_aupr = [[],[],[]]
     loss_list = [[], [], []]
 
-    init_time = time.time()
+    
     run_time = 10
     acc_list, auc_list, pre_list = [],[],[]
 
     for i in range(run_time):
+        init_time = time.time()
         for epoch in range(1,1001): 
             loss = train(train_data)
             train_auc,train_acc, _, _, train_loss, train_aupr = test(train_data)
@@ -219,7 +220,7 @@ def main():
     # print(f"Final ACC Train: {train_acc:.4f}, ACC Val {val_acc:.4f},ACC Test: {test_acc:.4f}")
     # print(f"Final AUPR Train: {train_aupr:.4f}, AUC Val {val_aupr:.4f},AUC Test: {test_aupr:.4f}")
     print(f'avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' avg Test AUC: {sum(auc_list)/len(auc_list):.4f}', f' avg Test PRE: {sum(pre_list)/len(pre_list):.4f}')
-    print(f"Elapsed time {(end_time-init_time)/60:.4f} min")
+    print(f"Elapsed time {(end_time-init_time):.4f} seconds")
 
     OUTPUT_PATH =  os.path.join('Results', f'{DATABASE.upper()}_{hidden_channels}' )
 
@@ -232,17 +233,17 @@ def main():
     plot_auc(DATABASE, OUTPUT_PATH, loss_list, hidden_channels, 'loss')
 
 
-    with open(os.path.join(OUTPUT_PATH, 'AUC_results.txt'), 'a') as f:
-        f.write(f'{test_auc:.4f}\t{test_aupr:.4f}\t{(end_time-init_time)/60:.4f}\t{epoch}\n')
+    # with open(os.path.join(OUTPUT_PATH, 'AUC_results.txt'), 'a') as f:
+    #     f.write(f'{test_auc:.4f}\t{test_aupr:.4f}\t{(end_time-init_time)/60:.4f}\t{epoch}\n')
 
 
-    np.save(f'{OUTPUT_PATH}/results_auc.npy', results_auc)
-    np.save(f'{OUTPUT_PATH}/results_aupr.npy', results_aupr)
-    np.save(f'{OUTPUT_PATH}/loss_list.npy', loss_list)
-    np.save(f'{OUTPUT_PATH}/embeddings_drugs.npy', emb['drug'].cpu().numpy())
-    np.save(f'{OUTPUT_PATH}/embeddings_proteins.npy', emb['protein'].cpu().numpy())
+    # np.save(f'{OUTPUT_PATH}/results_auc.npy', results_auc)
+    # np.save(f'{OUTPUT_PATH}/results_aupr.npy', results_aupr)
+    # np.save(f'{OUTPUT_PATH}/loss_list.npy', loss_list)
+    # np.save(f'{OUTPUT_PATH}/embeddings_drugs.npy', emb['drug'].cpu().numpy())
+    # np.save(f'{OUTPUT_PATH}/embeddings_proteins.npy', emb['protein'].cpu().numpy())
 
-    torch.save(model.state_dict(), os.path.join(OUTPUT_PATH, 'model.pt'))
+    # torch.save(model.state_dict(), os.path.join(OUTPUT_PATH, 'model.pt'))
 
 #####+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 

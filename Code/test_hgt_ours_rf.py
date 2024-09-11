@@ -307,7 +307,9 @@ rf_model = RandomForestClassifier()
 
 
 acc_list, auc_list, pre_list = [],[],[]
+time_list = []
 run_time = 10
+
 
 # 测试模型
 train_x_dict = test(model, train_data, device)
@@ -343,14 +345,13 @@ for i in range(run_time):
     init_time = time.time()
     for epoch in range(1,101):  # 假设训练10个epoch 1001->101
         loss = train(model, train_data, optimizer, device)
-        if epoch % 5 == 0:
+        if epoch % 10 == 0:
             print(f'Epoch: {epoch+1}, Loss: {loss:.4f}')
 
     
 
     rf_model.fit(train_edge_x_final, train_y)
-    end_time = time.time()
-    print(f"Elapsed time {(end_time-init_time)/60:.4f} min")
+    
 
 
 
@@ -358,7 +359,12 @@ for i in range(run_time):
     y_pred_proba = rf_model.predict_proba(test_edge_x_final)[:, 1]
     y_pred = rf_model.predict(test_edge_x_final)
 
-    
+    end_time = time.time()
+    print(f"Elapsed time {(end_time-init_time):.4f} seconds")
+
+    time_list.append(end_time-init_time)
+
+    ### 这里的时间指的是包括training+test两部分的时间
 
 
     print('test data and predicted data:\n')
@@ -380,7 +386,7 @@ for i in range(run_time):
     
 
 
-print(f'avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' avg Test AUC: {sum(auc_list)/len(auc_list):.4f}', f' avg Test PRE: {sum(pre_list)/len(pre_list):.4f}')
+print(f'avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' avg Test AUC: {sum(auc_list)/len(auc_list):.4f}', f' avg Test PRE: {sum(pre_list)/len(pre_list):.4f}', f'avg Time:{sum(time_list)/len(time_list):.4f}')
 
 
 

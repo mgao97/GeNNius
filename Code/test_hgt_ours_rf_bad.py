@@ -245,7 +245,7 @@ model = HGT(hidden_channels, out_channels, num_heads, num_layers).to(device)
 print('model:',model)
 
 # 定义优化器
-optimizer = Adam(model.parameters(), lr=0.05, weight_decay=5e-4)
+optimizer = Adam(model.parameters(), lr=0.005, weight_decay=5e-4)
 min_valid_loss = np.inf
 
 # 初始化逻辑回归模型
@@ -254,7 +254,7 @@ rf_model = RandomForestClassifier()
 # xgboost_model = xgb.XGBClassifier(learning_rate=0.1, max_depth=5, gamma=1, subsample=0.8)
 
 acc_list, auc_list, pre_list = [],[],[]
-run_time = 10
+run_time = 3
 
 
 

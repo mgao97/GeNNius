@@ -151,9 +151,12 @@ def hetero_data_to_nx_graph(pyg_data):
     # 创建一个空的 NetworkX 图
     G = nx.Graph()
 
+    for node_type in pyg_data.node_types:
+        pyg_data[node_type].n_id = torch.arange(pyg_data[node_type].num_nodes)
+
     # 添加节点和边
-    drug_nodes = pyg_data['drug'].node_id.cpu().tolist()
-    protein_nodes = pyg_data['protein'].node_id.cpu().tolist()
+    drug_nodes = pyg_data['drug'].n_id.cpu().tolist()
+    protein_nodes = pyg_data['protein'].n_id.cpu().tolist()
     protein_nodes = transform_list(drug_nodes,protein_nodes)
     print('drug_nodes:',drug_nodes,'protein_nodes:',protein_nodes)
     edges = pyg_data['drug', 'interaction', 'protein'].edge_index.t().cpu().tolist()
@@ -163,8 +166,8 @@ def hetero_data_to_nx_graph(pyg_data):
     G.add_edges_from(edges)
 
     # 将节点和边的属性从 HeteroData 中复制到 NetworkX 图中
-    drug_features = {node: feature.numpy() for node, feature in zip(pyg_data['drug'].node_id.cpu(), pyg_data['drug'].x.cpu())}
-    protein_features = {node: feature.numpy() for node, feature in zip(pyg_data['protein'].node_id.cpu(), pyg_data['protein'].x.cpu())}
+    drug_features = {node: feature.numpy() for node, feature in zip(pyg_data['drug'].n_id.cpu(), pyg_data['drug'].x.cpu())}
+    protein_features = {node: feature.numpy() for node, feature in zip(pyg_data['protein'].n_id.cpu(), pyg_data['protein'].x.cpu())}
 
     nx.set_node_attributes(G, drug_features, 'drug_features')
     nx.set_node_attributes(G, protein_features, 'protein_features')
@@ -175,15 +178,21 @@ g = hetero_data_to_nx_graph(data)
 print('graph info:', len(g.nodes()), len(g.edges()))
 
 acc_list,auc_list,pre_list = [],[],[]
+time_list = []
 run_time = 10
 
 for i in range(run_time):
+    init_time = time.time()
     test_preds = []
     for j in range(len(test_edge_idx_list)):
         preds = nx.jaccard_coefficient(g,[tuple(test_edge_idx_list[j])])
         for u,v,p in preds:
             test_preds.append(p)
     
+    end_time = time.time()
+    print(f"Elapsed time {(end_time-init_time):.4f} seconds")
+
+    time_list.append(end_time-init_time)
     # print(test_preds,len(test_preds))
 
     # 计算AUC
@@ -199,7 +208,7 @@ for i in range(run_time):
     acc_list.append(accuracy)
 
 
-print(f'Jacard Coefficient Metric: Avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' Avg Test AUC: {sum(auc_list)/len(auc_list):.4f}',f' Avg Test AUC: {sum(pre_list)/len(pre_list):.4f}')
+print(f'Jacard Coefficient Metric: Avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' Avg Test AUC: {sum(auc_list)/len(auc_list):.4f}',f' Avg Test AUC: {sum(pre_list)/len(pre_list):.4f}', f'avg Time:{sum(time_list)/len(time_list):.4f}')
 
 
 

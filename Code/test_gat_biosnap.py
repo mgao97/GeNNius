@@ -291,26 +291,35 @@ print('model:',model)
 # 定义优化器
 optimizer = Adam(model.parameters(), lr=0.05)
 
-# 训练模型
-for epoch in range(1,1001):  # 假设训练10个epoch
-    loss = train(model, train_data, optimizer, device)
-    if epoch % 50 == 0:
-        print(f'Epoch: {epoch+1}, Loss: {loss:.4f}')
+
 
 
 
 acc_list,auc_list,pre_list = [],[],[]
+time_list = []
 run_time = 10
 
 for i in range(run_time):
+    init_time = time.time()
+    # 训练模型
+    for epoch in range(1,1001):  # 假设训练10个epoch
+        loss = train(model, train_data, optimizer, device)
+        if epoch % 50 == 0:
+            print(f'Epoch: {epoch+1}, Loss: {loss:.4f}')
     # 测试模型
+
+    end_time = time.time()
+    print(f"Elapsed time {(end_time-init_time):.4f} seconds")
+
+    time_list.append(end_time-init_time)
+
     accuracy, auc, pre = test(model, test_data, device)
     acc_list.append(accuracy)
     auc_list.append(auc)
     pre_list.append(pre)
 
 
-print(f'avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' avg Test AUC: {sum(auc_list)/len(auc_list):.4f}',f' avg Test AUC: {sum(pre_list)/len(pre_list):.4f}')
+print(f'avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' avg Test AUC: {sum(auc_list)/len(auc_list):.4f}',f' avg Test Pre: {sum(pre_list)/len(pre_list):.4f}', f'avg Time:{sum(time_list)/len(time_list):.4f}')
 
 
 

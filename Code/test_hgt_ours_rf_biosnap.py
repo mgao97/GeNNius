@@ -328,6 +328,7 @@ con_edge_x = torch.stack(test_edge_x_list, dim=0)
 test_edge_x_final = torch.cat((con_edge_x,torch.tensor(test_edge_x).to(device)),dim=1).detach().to('cpu')
 
 acc_list,auc_list, pre_list = [],[],[]
+time_list = []
 run_time = 10
 
 for i in range(run_time):
@@ -339,7 +340,9 @@ for i in range(run_time):
 
     rf_model.fit(train_edge_x_final, train_y)
     end_time = time.time()
+
     print(f"Elapsed time {(end_time-init_time)/60:.4f} min")
+    time_list.append(end_time-init_time)
 
     # 进行预测
     y_pred_proba = rf_model.predict_proba(test_edge_x_final)[:, 1]
@@ -363,7 +366,7 @@ for i in range(run_time):
     pre_list.append(precision)
 
 
-print(f'avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' avg Test AUC: {sum(auc_list)/len(auc_list):.4f}', f' avg Test PRE: {sum(pre_list)/len(pre_list):.4f}')
+print(f'avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' avg Test AUC: {sum(auc_list)/len(auc_list):.4f}', f' avg Test PRE: {sum(pre_list)/len(pre_list):.4f}', f'avg Time:{sum(time_list)/len(time_list):.4f}')
 
 
 

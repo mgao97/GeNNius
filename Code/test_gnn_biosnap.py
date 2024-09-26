@@ -273,17 +273,25 @@ for epoch in range(1,1001):  # 假设训练10个epoch
 
 
 acc_list,auc_list,pre_list = [],[],[]
+time_list = []
 run_time = 10
 
 for i in range(run_time):
+    init_time = time.time()
     # 测试模型
     accuracy, auc, pre = test(model, test_data, device)
+
+    end_time = time.time()
+    print(f"Elapsed time {(end_time-init_time):.4f} seconds")
+
+    time_list.append(end_time-init_time)
+
     acc_list.append(accuracy)
     auc_list.append(auc)
     pre_list.append(pre)
 
 
-print(f'avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' avg Test AUC: {sum(auc_list)/len(auc_list):.4f}',f' avg Test AUC: {sum(pre_list)/len(pre_list):.4f}')
+print(f'avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' avg Test AUC: {sum(auc_list)/len(auc_list):.4f}',f' avg Test AUC: {sum(pre_list)/len(pre_list):.4f}', f'avg Time:{sum(time_list)/len(time_list):.4f}')
 
 
 

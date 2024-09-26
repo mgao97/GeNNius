@@ -139,8 +139,10 @@ model = RandomForestClassifier()
 
 acc_list,auc_list,pre_list = [],[],[]
 run_time = 10
+time_list = []
 
 for i in range(run_time):
+    init_time = time.time()
     # 测试模型
     model.fit(train_edge_x, train_y)
 
@@ -148,6 +150,8 @@ for i in range(run_time):
     y_pred_proba = model.predict_proba(test_edge_x)[:, 1]
     y_pred = model.predict(test_edge_x)
 
+    end_time = time.time()
+    time_list.append((end_time-init_time))
     # 计算AUC
     auc = roc_auc_score(test_y, y_pred_proba)
     auc_list.append(auc)
@@ -161,7 +165,7 @@ for i in range(run_time):
     acc_list.append(accuracy)
 
 
-print(f'RF model: Avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' Avg Test AUC: {sum(auc_list)/len(auc_list):.4f}',f' Avg Test AUC: {sum(pre_list)/len(pre_list):.4f}')
+print(f'RF model: Avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' Avg Test AUC: {sum(auc_list)/len(auc_list):.4f}',f' Avg Test pre: {sum(pre_list)/len(pre_list):.4f}', f'avg Time:{sum(time_list)/len(time_list):.4f}')
 
 
 

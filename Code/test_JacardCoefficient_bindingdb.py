@@ -151,6 +151,9 @@ def hetero_data_to_nx_graph(pyg_data):
     # 创建一个空的 NetworkX 图
     G = nx.Graph()
 
+    for node_type in pyg_data.node_types:
+        pyg_data[node_type].node_id = torch.arange(pyg_data[node_type].num_nodes)
+
     # 添加节点和边
     drug_nodes = pyg_data['drug'].node_id.cpu().tolist()
     protein_nodes = pyg_data['protein'].node_id.cpu().tolist()
@@ -176,8 +179,10 @@ print('graph info:', len(g.nodes()), len(g.edges()))
 
 acc_list,auc_list,pre_list = [],[],[]
 run_time = 10
+time_list = []
 
 for i in range(run_time):
+    init_time = time.time()
     test_preds = []
     for j in range(len(test_edge_idx_list)):
         preds = nx.jaccard_coefficient(g,[tuple(test_edge_idx_list[j])])
@@ -185,6 +190,10 @@ for i in range(run_time):
             test_preds.append(p)
     
     # print(test_preds,len(test_preds))
+    end_time = time.time()
+    print(f"Elapsed time {(end_time-init_time):.4f} seconds")
+
+    time_list.append(end_time-init_time)
 
     # 计算AUC
     auc = roc_auc_score(test_y, test_preds)
@@ -199,7 +208,7 @@ for i in range(run_time):
     acc_list.append(accuracy)
 
 
-print(f'Jacard Coefficient Metric: Avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' Avg Test AUC: {sum(auc_list)/len(auc_list):.4f}',f' Avg Test AUC: {sum(pre_list)/len(pre_list):.4f}')
+print(f'Jacard Coefficient Metric: Avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' Avg Test AUC: {sum(auc_list)/len(auc_list):.4f}',f' Avg Test Pre: {sum(pre_list)/len(pre_list):.4f}', f'avg Time:{sum(time_list)/len(time_list):.4f}')
 
 
 

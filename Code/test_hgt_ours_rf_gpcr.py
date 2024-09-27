@@ -344,9 +344,6 @@ time_list = []
 for i in range(run_time):
     init_time = time.time()
     for epoch in range(1,1001):  # 假设训练10个epoch 1001->101
-
-
-        
         
         loss = train(model, x_dict, edge_index_dict,edge_label_index_dict, optimizer, device)
         if epoch % 50 == 0:

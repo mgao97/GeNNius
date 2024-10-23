@@ -147,12 +147,45 @@ def main():
     dst = [protein_mapping[index] for index in new_df['Protein']]
     edge_index = torch.tensor([src, dst])
 
-    smile_sequence = dict({'SMILES':drug_features['SMILES'].to_list(),'Target Sequence':protein_feaures['Sequence'],'Label':[1 for i in range(len(src))]})
+    drug_list = [index for index in new_df['Drug']]
+    protein_list = [index for index in new_df['Protein']]
+
+    
+
+    drug_features['PubChem'] = drug_features['PubChem'].astype(str)
+    protein_feaures['Uniprot'] = protein_feaures['Uniprot'].astype(str)
+
+    
+
+    drug_feature_list = drug_features[drug_features['PubChem'].isin(drug_list)]['SMILES'].tolist()
+    protein_feature_list = protein_feaures[protein_feaures['Uniprot'].isin(protein_list)]['Sequence'].tolist()
+
+    # 构建映射
+    drug_mapping1 = {row['PubChem']: row['SMILES'] for _, row in drug_features.iterrows()}
+    protein_mapping1 = {row['Uniprot']: row['Sequence'] for _, row in protein_feaures.iterrows()}
+
+    # 创建 drug_feature_list 和 protein_feature_list
+    drug_feature_list = [drug_mapping1[index] for index in new_df['Drug'] if index in drug_mapping1]
+    protein_feature_list = [protein_mapping1[index] for index in new_df['Protein'] if index in protein_mapping1]
+
+    # 打印结果
+    print("Drug feature list:", drug_feature_list)
+    print("Protein feature list:", protein_feature_list)
+
+    # 验证长度
+    print("Number of drug features:", len(drug_feature_list))
+    print("Number of protein features:", len(protein_feature_list))
+
+
+    
+
+
+    smile_sequence = dict({'SMILES':drug_feature_list,'Target Sequence':protein_feature_list,'Label':[1 for i in range(5937)]})
 
     # 首先将字典转换为DataFrame
     smile_sequence_df = pd.DataFrame(smile_sequence)
     # 然后保存为CSV
-    smile_sequence_df.to_csv('../Data/{DATABASE}/smile_sequence.csv', header=False, index=False)
+    smile_sequence_df.to_csv('smile_sequence.csv', header=False, index=False)
     
 
 

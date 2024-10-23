@@ -10,20 +10,20 @@ import torch
 elements_list = []
 
 # 按行读取文件
-with open('smile_llm1.txt', 'r', encoding='utf-8') as file:
+with open('sequence_llm.txt', 'r', encoding='utf-8') as file:
     for line in file:
         # 使用逗号分割每一行，并提取第一个逗号后的部分
         parts = line.split(',', 1)  # 使用 maxsplit=1 只分割一次
         if len(parts) > 1:  # 确保该行有逗号，避免索引错误
             elements_list.append(parts[1].strip())  # 去除多余的空白字符
 
-# smiles_text_dict = dict(zip([i for i in range(len(elements_list))],elements_list))
+sequence_text_dict = dict(zip([i for i in range(len(elements_list))],elements_list))
 
-# # 将字典保存为JSON格式
-# with open('smiles_text_dict.json', 'w', encoding='utf-8') as f:
-#     json.dump(smiles_text_dict, f, ensure_ascii=False, indent=4)
+# 将字典保存为JSON格式
+with open('sequence_text_dict.json', 'w', encoding='utf-8') as f:
+    json.dump(sequence_text_dict, f, ensure_ascii=False, indent=4)
 
-# print("字典已成功保存为JSON格式!")
+print("字典已成功保存为JSON格式!")
 
 
 # client = ZhipuAI(api_key="b98bf11fa3d3abc910f61f831bfc21b8.iEU2fs1qFhVS87aZ")  # 请填写您自己的APIKey
@@ -72,9 +72,9 @@ for response in response_batch:
 tensor_data = torch.tensor(all_embeddings)
 
 # 保存为.pt文件
-torch.save(tensor_data, 'smile_llm_emb.pt')
+torch.save(tensor_data, 'sequence_llm_emb.pt')
 
-print("数据已成功保存为 smile_llm_emb.pt 文件！")
+print("数据已成功保存为 sequence_llm_emb.pt 文件！")
         
 # data  = torch.load('smile_llm_emb.pt')
 # print(data,data.shape)

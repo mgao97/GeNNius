@@ -76,5 +76,3 @@ torch.save(tensor_data, 'smile_llm_emb.pt')
 
 print("数据已成功保存为 smile_llm_emb.pt 文件！")
         
-# data  = torch.load('smile_llm_emb.pt')
-# print(data,data.shape)

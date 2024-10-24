@@ -240,6 +240,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 path = 'Data/DRUGBANK/hetero_data_drugbank.pt'
 data = torch.load(path)
+llm_emb = torch.load('Data/')
 data = T.ToUndirected()(data)
 
 print('='*100)

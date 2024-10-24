@@ -6,9 +6,9 @@ smiles_llm_emb = torch.load('smile_llm_emb.pt')
 sequences_llm_emb = torch.load('sequence_llm_emb.pt')
 print(smiles_llm_emb.shape,sequences_llm_emb.shape)
 
-# unique drugs: 3408
+# unique drugs: 3084
 # 复制原始tensor以确保随机选取不改变原始数据
-exp_smile_llm_emb = torch.zeros(3408,256)
+exp_smile_llm_emb = torch.zeros(3084,256)
 # 随机选择缺少的行
 indices = torch.randperm(smiles_llm_emb.shape[0])[:3084-smiles_llm_emb.shape[0]]
 # 将选中的行复制到新的位置

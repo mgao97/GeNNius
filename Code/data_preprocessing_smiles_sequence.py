@@ -180,7 +180,7 @@ def main():
     
 
 
-    smile_sequence = dict({'SMILES':drug_feature_list,'Target Sequence':protein_feature_list,'Label':[1 for i in range(5937)]})
+    smile_sequence = dict({'SMILES':drug_feature_list,'Target Sequence':protein_feature_list,'Label':[1 for i in range(len(drug_feature_list))]})
 
     # 首先将字典转换为DataFrame
     smile_sequence_df = pd.DataFrame(smile_sequence)

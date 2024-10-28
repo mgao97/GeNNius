@@ -86,8 +86,8 @@ def smile2feature(data_root, type, file_data):
 
 if __name__ == '__main__':
     # dataset_name = "Davis"
-    dataset_name = "BIOSNAP"
-    data_root = "../../Data/" + dataset_name
+    dataset_name = "BioSNAP"
+    data_root = "data/" + dataset_name
     train_file = data_root + "/" + dataset_name + "_train.txt"
     test_file = data_root + "/" + dataset_name + "_test.txt"
     val_file = data_root + "/" + dataset_name + "_val.txt"

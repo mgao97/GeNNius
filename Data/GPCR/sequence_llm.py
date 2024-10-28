@@ -2,6 +2,24 @@ from zhipuai import ZhipuAI
 import pandas as pd
 client = ZhipuAI(api_key="b98bf11fa3d3abc910f61f831bfc21b8.iEU2fs1qFhVS87aZ")  # 请填写您自己的APIKey
 
+
+column_names = 'SMILES,SEQUENCE,LABLE\n'
+
+# 以读模式打开文件，并读取所有内容
+with open('smile_sequence.txt', 'r') as file:
+    lines = file.readlines()
+    
+# 在第一行添加列名
+lines.insert(0, column_names)
+
+
+# 以写模式打开文件，并写入新的内容
+with open('smile_sequence.txt', 'w') as file:
+    file.writelines(lines)
+
+print('done!')
+
+
 df = pd.read_csv('smile_sequence.txt')
 df_SMILES = df['SEQUENCE'].unique().tolist()
 

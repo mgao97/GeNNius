@@ -240,12 +240,24 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 path = 'Data/DRUGBANK/hetero_data_drugbank.pt'
 data = torch.load(path)
-llm_emb = torch.load('Data/')
+# llm_emb = torch.load('Data/')
 data = T.ToUndirected()(data)
-
+smile_llm_emb = torch.load('Data/DRUGBANK/exp_smile_llm_emb.pt',map_location=device)
+sequence_llm_emb = torch.load('Data/DRUGBANK/exp_sequence_llm_emb.pt',map_location=device)
 print('='*100)
 print('data:', data)
 print('='*100)
+print('smile llm emb:',smile_llm_emb.shape)
+print('suquence llm emb:',sequence_llm_emb.shape)
+
+
+drug_x = torch.cat((data['drug'].x,smile_llm_emb[:data['drug'].x.shape[0]]),dim=1)
+data['drug'].x = drug_x
+
+
+protein_x = torch.cat((data['protein'].x,sequence_llm_emb[:data['protein'].x.shape[0]]),dim=1)
+data['protein'].x = protein_x
+
 
 import random
 random.seed(42)
@@ -300,7 +312,7 @@ print('model:',model)
 # test_x_hgt_emb = model(test_data)
 
 # 定义优化器
-optimizer = Adam(model.parameters(), lr=0.05)
+optimizer = Adam(model.parameters(), lr=0.01)
 
 
 # 初始化逻辑回归模型
@@ -309,7 +321,7 @@ rf_model = RandomForestClassifier()
 
 acc_list, auc_list, pre_list = [],[],[]
 time_list = []
-run_time = 10
+run_time = 5
 
 
 # 测试模型

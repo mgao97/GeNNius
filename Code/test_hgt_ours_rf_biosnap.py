@@ -239,10 +239,23 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 path = 'Data/BIOSNAP/hetero_data_biosnap.pt'
 data = torch.load(path)
 data = T.ToUndirected()(data)
-
+smile_llm_emb = torch.load('Data/BIOSNAP/exp_smile_llm_emb.pt',map_location=device)
+sequence_llm_emb = torch.load('Data/BIOSNAP/exp_sequence_llm_emb.pt',map_location=device)
 print('='*100)
 print('data:', data)
 print('='*100)
+print('smile llm emb:',smile_llm_emb.shape)
+print('suquence llm emb:',sequence_llm_emb.shape)
+
+
+
+drug_x = torch.cat((data['drug'].x,smile_llm_emb[:data['drug'].x.shape[0]]),dim=1)
+data['drug'].x = drug_x
+
+
+protein_x = torch.cat((data['protein'].x,sequence_llm_emb[:data['protein'].x.shape[0]]),dim=1)
+data['protein'].x = protein_x
+
 
 import random
 random.seed(42)
@@ -252,7 +265,7 @@ transform = T.RandomLinkSplit(
     num_val=0.1,
     num_test=0.2,
     is_undirected=True,
-    disjoint_train_ratio=0.2,
+    disjoint_train_ratio=0.0,
     neg_sampling_ratio=2.0,
     add_negative_train_samples=True,
     edge_types=("drug", "interaction", "protein"),
@@ -281,9 +294,9 @@ test_edge_x, test_y = test_edge_x.cpu(), test_y.cpu()
 rf_model = RandomForestClassifier()
 
 # 定义模型参数
-hidden_channels = 64
+hidden_channels = 128
 out_channels = 1
-num_heads = 2
+num_heads = 4
 num_layers = 2
 
 
@@ -329,13 +342,13 @@ optimizer = Adam(model.parameters(), lr=0.05)
 
 acc_list,auc_list, pre_list = [],[],[]
 time_list = []
-run_time = 10
+run_time = 5
 
 for i in range(run_time):
     
-    for epoch in range(1,1000):  # 假设训练10个epoch 1001->101
+    for epoch in range(1,401):  # 假设训练10个epoch 1001->101
         loss = train(model, train_data, optimizer, device)
-        if epoch % 10 == 0:
+        if epoch % 50 == 0:
             print(f'Epoch: {epoch+1}, Train Loss: {loss:.4f}')
 
     # 测试模型
@@ -356,7 +369,7 @@ for i in range(run_time):
     rf_model.fit(train_edge_x_final, train_y)
     end_time = time.time()
 
-    print(f"Elapsed Training time {(end_time-init_time)/60:.4f} min")
+    # print(f"Elapsed Training time {(end_time-init_time)/60:.4f} min")
     time_list.append(end_time-init_time)
 
     # 测试模型
@@ -381,7 +394,7 @@ for i in range(run_time):
     y_pred = rf_model.predict(test_edge_x_final)
     end_time = time.time()
 
-    print(f"Elapsed Inference time {(end_time-init_time)/60:.4f} min")
+    # print(f"Elapsed Inference time {(end_time-init_time)/60:.4f} min")
     time_list.append(end_time-init_time)
 
     # 计算AUC

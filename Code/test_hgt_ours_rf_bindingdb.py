@@ -261,6 +261,33 @@ print('='*100)
 print('smile llm emb:',smile_llm_emb.shape)
 print('suquence llm emb:',sequence_llm_emb.shape)
 
+from sklearn.decomposition import PCA
+
+def apply_pca(input_tensor, n_components=64):
+    """
+    Apply PCA to reduce the dimensionality of the input tensor.
+
+    Args:
+        input_tensor (np.ndarray): The input tensor of shape (n_samples, n_features).
+        n_components (int): The number of components to keep after PCA.
+
+    Returns:
+        np.ndarray: The transformed tensor with reduced dimensions.
+    """
+    # Ensure the input is a 2D array
+    if input_tensor.ndim != 2:
+        raise ValueError("Input tensor must be 2D (n_samples, n_features)")
+
+    # Create a PCA instance
+    pca = PCA(n_components=n_components)
+
+    # Fit PCA on the input tensor and transform it
+    reduced_tensor = torch.tensor(pca.fit_transform(input_tensor)).long()
+
+    return reduced_tensor
+
+smile_llm_emb = apply_pca(smile_llm_emb.cpu(), n_components=64).to(device)
+
 drug_x = torch.cat((data['drug'].x,smile_llm_emb[:data['drug'].x.shape[0]]),dim=1)
 data['drug'].x = drug_x
 
@@ -305,9 +332,9 @@ test_edge_x, test_y = test_edge_x.cpu(), test_y.cpu()
 rf_model = RandomForestClassifier()
 
 # 定义模型参数
-hidden_channels = 64
+hidden_channels = 128
 out_channels = 1
-num_heads = 2
+num_heads = 4
 num_layers = 2
 
 
@@ -353,15 +380,16 @@ test_edge_x_final = torch.cat((con_edge_x,torch.tensor(test_edge_x).to(device)),
 
 acc_list,auc_list, pre_list = [],[],[]
 time_list =[]
-run_time = 10
+run_time = 5
 
 for i in range(run_time):
-    init_time = time.time()
-    for epoch in range(1,400):  # 假设训练10个epoch 1001->101
+    
+    for epoch in range(1,1001):  # 假设训练10个epoch 1001->101
         loss = train(model, train_data, optimizer, device)
         if epoch % 50 == 0:
             print(f'Epoch: {epoch+1}, Loss: {loss:.4f}')
-
+    
+    init_time = time.time()
     rf_model.fit(train_edge_x_final, train_y)
     end_time = time.time()
     print(f"Elapsed time {(end_time-init_time)/60:.4f} min")
@@ -389,7 +417,7 @@ for i in range(run_time):
     pre_list.append(precision)
 
 
-print(f'avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' avg Test AUC: {sum(auc_list)/len(auc_list):.4f}', f' avg Test PRE: {sum(pre_list)/len(pre_list):.4f}', f'avg Time:{sum(time_list)/len(time_list):.4f seconds}')
+print(f'avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' avg Test AUC: {sum(auc_list)/len(auc_list):.4f}', f' avg Test PRE: {sum(pre_list)/len(pre_list):.4f}', f'avg Time:{sum(time_list)/len(time_list):.4f}')
 
 
 

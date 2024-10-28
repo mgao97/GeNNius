@@ -36,14 +36,14 @@ def model_run(args):
                   " decoder_depth:  " + str(args.depth_decoder) + " .txt"
 
     # ********************************* Train_dataset *********************************
-    train_img_path = "data/" + args.dataset_name + "/train/" + "Img_" + str(args.img_size) + "_" + str(
+    train_img_path = "../../Data/" + args.dataset_name + "/train/" + "Img_" + str(args.img_size) + "_" + str(
         args.img_size) + "/img_inf_data"
     train_image = get_img_path(train_img_path)
-    train_smile_name = "data/" + args.dataset_name + "/input/" + args.dataset_name + "_train_smiles_" + str(
+    train_smile_name = "../../Data/" + args.dataset_name + "/input/" + args.dataset_name + "_train_smiles_" + str(
         args.k) + "_gram.npy"
-    train_pro_name = "data/" + args.dataset_name + "/input/" + args.dataset_name + "_train_proteins_" + str(
+    train_pro_name = "../../Data/" + args.dataset_name + "/input/" + args.dataset_name + "_train_proteins_" + str(
         args.k) + "_gram.npy"
-    train_inter_name = "data/" + args.dataset_name + "/input/" + args.dataset_name + "_train_interactions.npy"
+    train_inter_name = "../../Data/" + args.dataset_name + "/input/" + args.dataset_name + "_train_interactions.npy"
     train_dataset, train_loader = data_loader(batch_size=args.batch_size,
                                               imgs=train_image,
                                               smile_name=train_smile_name,
@@ -51,15 +51,15 @@ def model_run(args):
                                               inter_name=train_inter_name)
 
     # ********************************* Val_dataset *********************************
-    val_img_path = "data/" + args.dataset_name + "/val/" + "Img_" + str(args.img_size) + "_" + str(
+    val_img_path = "../../Data/" + args.dataset_name + "/val/" + "Img_" + str(args.img_size) + "_" + str(
         args.img_size) + "/img_inf_data"
     val_image = get_img_path(val_img_path)
 
-    val_smile_name = "data/" + args.dataset_name + "/input/" + args.dataset_name + "_val_smiles_" + str(
+    val_smile_name = "../../Data/" + args.dataset_name + "/input/" + args.dataset_name + "_val_smiles_" + str(
         args.k) + "_gram.npy"
-    val_pro_name = "data/" + args.dataset_name + "/input/" + args.dataset_name + "_val_proteins_" + str(
+    val_pro_name = "../../Data/" + args.dataset_name + "/input/" + args.dataset_name + "_val_proteins_" + str(
         args.k) + "_gram.npy"
-    val_inter_name = "data/" + args.dataset_name + "/input/" + args.dataset_name + "_val_interactions.npy"
+    val_inter_name = "../../Data/" + args.dataset_name + "/input/" + args.dataset_name + "_val_interactions.npy"
     val_dataset, val_loader = data_loader(batch_size=args.batch_size,
                                           imgs=val_image,
                                           smile_name=val_smile_name,
@@ -67,15 +67,15 @@ def model_run(args):
                                           inter_name=val_inter_name)
 
     # ********************************* Test_dataset *********************************
-    test_img_path = "data/" + args.dataset_name + "/test/" + "Img_" + str(args.img_size) + "_" + str(
+    test_img_path = "../../Data/" + args.dataset_name + "/test/" + "Img_" + str(args.img_size) + "_" + str(
         args.img_size) + "/img_inf_data"
     test_image = get_img_path(test_img_path)
 
-    test_smile_name = "data/" + args.dataset_name + "/input/" + args.dataset_name + "_test_smiles_" + str(
+    test_smile_name = "../../Data/" + args.dataset_name + "/input/" + args.dataset_name + "_test_smiles_" + str(
         args.k) + "_gram.npy"
-    test_pro_name = "data/" + args.dataset_name + "/input/" + args.dataset_name + "_test_proteins_" + str(
+    test_pro_name = "../../Data/" + args.dataset_name + "/input/" + args.dataset_name + "_test_proteins_" + str(
         args.k) + "_gram.npy"
-    test_inter_name = "data/" + args.dataset_name + "/input/" + args.dataset_name + "_test_interactions.npy"
+    test_inter_name = "../../Data/" + args.dataset_name + "/input/" + args.dataset_name + "_test_interactions.npy"
     test_dataset, test_loader = data_loader(batch_size=args.batch_size,
                                             imgs=test_image,
                                             smile_name=test_smile_name,
@@ -90,7 +90,7 @@ def model_run(args):
         protein_len = 22
     elif (args.dataset_name == "Celegans"):
         protein_len = 21
-    elif (args.dataset_name == "BindingDB"):
+    elif (args.dataset_name == "BINDINGDB"):
         protein_len = 41
 
     torch.manual_seed(2)
@@ -131,7 +131,7 @@ def model_run(args):
                     f"[loss_train : {loss_train}]")
 
         # model save
-        model_path = "data/" + args.dataset_name + "/output/model/"
+        model_path = "../../Data/" + args.dataset_name + "/output/model/"
         if os.path.exists(model_path):
             shutil.rmtree(model_path)
 
@@ -181,7 +181,7 @@ def val(args, file_model, val_loader):
 
 
 def test(args, file_model, test_dataset, test_loader, file_AUCs_test):
-    torch.manual_seed(2)
+    torch.manual_seed(42)
     model = torch.load(file_model)
     tester = Tester(model)
     Loss, y_label, y_pred, y_score = [], [], [], []

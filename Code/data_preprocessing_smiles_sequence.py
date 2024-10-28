@@ -31,7 +31,7 @@ def main():
                     help="Verbosity (between 1-4 occurrences with more leading to more "
                         "verbose logging). CRITICAL=0, ERROR=1, WARN=2, INFO=3, "
                         "DEBUG=4")
-    parser.add_argument("-d", "--database", help="database: e, nr, ic, gpcr, drugbank, bindingdb", type=str)
+    parser.add_argument("-d", "--database", help="database: e, nr, ic, gpcr, drugbank, bindingdb, biosnap", type=str)
 
     args = parser.parse_args()
     log_levels = {

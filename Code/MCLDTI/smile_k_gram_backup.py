@@ -6,7 +6,7 @@ def get_all_smiles(dataset_name):
     smiles = []
     types = {"train", "val", "test"}
     for type in types:
-        data_file = "../../Data/" + dataset_name + "/" + type + "_smile_features.txt"
+        data_file = "data/" + dataset_name + "/" + type + "_smile_features.txt"
         with open(data_file, "r") as f:
             lines = f.readlines()
             for i in lines:
@@ -93,7 +93,7 @@ def k_gram_save(data_file, k, save_name):
 
 if __name__ == '__main__':
     # dataset_name = "Davis"
-    dataset_name = "BIOSNAP"
+    dataset_name = "BioSNAP"
     k = 1
     dim = 512
     smiles = get_k_gram_seqs(get_all_smiles(dataset_name), k)
@@ -102,8 +102,8 @@ if __name__ == '__main__':
 
     types = {"train", "val", "test"}
     for type in types:
-        data_file = "../../Data/" + dataset_name + "/" + type + "_smile_features.txt"
-        save_name = "../../Data/" + dataset_name + "/input/" + dataset_name + "_" + type + "_smiles_" + str(k) + "_gram"
+        data_file = "data/" + dataset_name + "/" + type + "_smile_features.txt"
+        save_name = "data/" + dataset_name + "/input/" + dataset_name + "_" + type + "_smiles_" + str(k) + "_gram"
         print(data_file)
 
         k_gram_save(data_file=data_file, k=k, save_name=save_name)

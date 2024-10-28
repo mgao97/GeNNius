@@ -5,20 +5,11 @@ def get_all_proteins(dataset_name):
     proteins = []
     types = {"train", "val", "test"}
     for type in types:
-        data_file = "../../Data/" + dataset_name + "/" + dataset_name + "_" + type + ".txt"
-        # print('data_file:',data_file)
+        data_file = "data/" + dataset_name + "/" + dataset_name + "_" + type + ".txt"
         with open(data_file, "r") as f:
             lines = f.readlines()
             for i in lines:
-                parts = i.split("\t")  # Split the line by spaces
-                # print('parts:',parts)
-                if len(parts) > 1:  # Check if there are enough parts
-                    proteins.append(parts[1])  # Safely append the second part
-                else:
-                    print(f"Skipping entry: '{i}' (not enough parts)")
-            # for i in lines:
-            #     print(i)
-            #     proteins.append(i.split(" ")[1])
+                proteins.append(i.split(" ")[1])
     return proteins
 
 
@@ -74,8 +65,7 @@ def k_gram_save(data_file, k, save_name):
     len_num = 0
     for i, data in enumerate(data_list):
         lis = []
-        # print('data:',data)
-        protein = data.strip().split("\t")[1]
+        protein = data.strip().split(" ")[1]
         pro = get_k_gram_seq(protein, k)
         for seq in pro:
             lis.append(dict[seq])
@@ -100,7 +90,7 @@ def k_gram_save(data_file, k, save_name):
 
 if __name__ == '__main__':
     # dataset_name = "Davis"
-    dataset_name = "BIOSNAP"
+    dataset_name = "BioSNAP"
     k = 1
     dim = 256
     proteins = get_k_gram_seqs(get_all_proteins(dataset_name), k)
@@ -109,6 +99,6 @@ if __name__ == '__main__':
 
     types = {"train", "val", "test"}
     for type in types:
-        data_file = "../../Data/" + dataset_name + "/" + dataset_name + "_" + type + ".txt"
-        save_name = "../../Data/" + dataset_name + "/input/" + dataset_name + "_" + type + "_proteins_" + str(k) + "_gram"
+        data_file = "data/" + dataset_name + "/" + dataset_name + "_" + type + ".txt"
+        save_name = "data/" + dataset_name + "/input/" + dataset_name + "_" + type + "_proteins_" + str(k) + "_gram"
         k_gram_save(data_file, k=k, save_name=save_name)

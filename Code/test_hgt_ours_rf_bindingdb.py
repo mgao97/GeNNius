@@ -251,15 +251,15 @@ def data_divide(data):
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 path = 'Data/BINDINGDB/hetero_data_bindingdb.pt'
-data = torch.load(path)
+data = torch.load(path,map_location=device)
 data = T.ToUndirected()(data)
-smile_llm_emb = torch.load('Data/BINDINGDB/exp_smile_llm_emb.pt',map_location=device)
-sequence_llm_emb = torch.load('Data/BINDINGDB/exp_sequence_llm_emb.pt',map_location=device)
-print('='*100)
-print('data:', data)
-print('='*100)
-print('smile llm emb:',smile_llm_emb.shape)
-print('suquence llm emb:',sequence_llm_emb.shape)
+# smile_llm_emb = torch.load('Data/BINDINGDB/exp_smile_llm_emb.pt',map_location=device)
+# sequence_llm_emb = torch.load('Data/BINDINGDB/exp_sequence_llm_emb.pt',map_location=device)
+# print('='*100)
+# print('data:', data)
+# print('='*100)
+# print('smile llm emb:',smile_llm_emb.shape)
+# print('suquence llm emb:',sequence_llm_emb.shape)
 
 from sklearn.decomposition import PCA
 
@@ -286,14 +286,14 @@ def apply_pca(input_tensor, n_components=64):
 
     return reduced_tensor
 
-smile_llm_emb = apply_pca(smile_llm_emb.cpu(), n_components=64).to(device)
+# smile_llm_emb = apply_pca(smile_llm_emb.cpu(), n_components=64).to(device)
 
-drug_x = torch.cat((data['drug'].x,smile_llm_emb[:data['drug'].x.shape[0]]),dim=1)
-data['drug'].x = drug_x
+# drug_x = torch.cat((data['drug'].x,smile_llm_emb[:data['drug'].x.shape[0]]),dim=1)
+# data['drug'].x = drug_x
 
 
-protein_x = torch.cat((data['protein'].x,sequence_llm_emb[:data['protein'].x.shape[0]]),dim=1)
-data['protein'].x = protein_x
+# protein_x = torch.cat((data['protein'].x,sequence_llm_emb[:data['protein'].x.shape[0]]),dim=1)
+# data['protein'].x = protein_x
 
 import random
 # random.seed(42)
@@ -384,7 +384,7 @@ run_time = 5
 
 for i in range(run_time):
     
-    for epoch in range(1,1001):  # 假设训练10个epoch 1001->101
+    for epoch in range(1,401):  # 假设训练10个epoch 1001->101
         loss = train(model, train_data, optimizer, device)
         if epoch % 50 == 0:
             print(f'Epoch: {epoch+1}, Loss: {loss:.4f}')

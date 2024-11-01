@@ -179,6 +179,7 @@ class MCLDTI(nn.Module):
                  protein_dim=256,
                  drop_ratio=0.,
                  backbone="",
+                #  protein_len=128,
                  protein_len=20,
                  ):
         super(MCLDTI, self).__init__()
@@ -314,6 +315,9 @@ class MCLDTI(nn.Module):
 
     def forward_features_decoder(self, x, y):
         B, _, _ = x.shape
+
+        # self.embeddings_decoder = nn.Embedding(y.max().item(), 256, padding_idx=0)
+        
         y = self.embeddings_decoder(y)
         y = self.pos_drop_decoder(y + self.pos_embed_decoder)
 
@@ -343,6 +347,9 @@ class MCLDTI(nn.Module):
         image_feature = self.forward_features_e1(image)
         smile_feature = self.forward_features_e2(smile)
         encoder_feature = self.rate1 * image_feature + self.rate2 * smile_feature
+        # print('encoder_feature:',encoder_feature.shape)
+        # print('protein:',protein.shape)
+        # print('='*100)
         decoder_feature = self.forward_features_decoder(encoder_feature, protein)
         decoder_feature = self.conv2d(decoder_feature)
         decoder_feature = decoder_feature.reshape(B, 256, -1)
@@ -353,6 +360,8 @@ class MCLDTI(nn.Module):
 
     def __call__(self, data, train=True):
         inputs, correct_interaction, = data[:-1], data[-1]
+        print('correct_interaction:',correct_interaction,torch.max(correct_interaction),torch.sum(correct_interaction))
+        print('*'*100)
         predicted_interaction, rate1, rate2 = self.forward(inputs)
         correct_interaction = torch.squeeze(correct_interaction)
         loss = F.cross_entropy(predicted_interaction, correct_interaction.to(device))

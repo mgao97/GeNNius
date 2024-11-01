@@ -237,9 +237,8 @@ def data_divide(data):
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 path = 'Data/BIOSNAP/hetero_data_biosnap.pt'
-data = torch.load(path,map_location=torch.device('cpu'))
+data = torch.load(path,map_location=device)
 data = T.ToUndirected()(data)
-
 smile_llm_emb = torch.load('Data/BIOSNAP/exp_smile_llm_emb.pt',map_location=device)
 sequence_llm_emb = torch.load('Data/BIOSNAP/exp_sequence_llm_emb.pt',map_location=device)
 print('='*100)
@@ -249,12 +248,14 @@ print('smile llm emb:',smile_llm_emb.shape)
 print('suquence llm emb:',sequence_llm_emb.shape)
 
 
+
 drug_x = torch.cat((data['drug'].x,smile_llm_emb[:data['drug'].x.shape[0]]),dim=1)
 data['drug'].x = drug_x
 
 
 protein_x = torch.cat((data['protein'].x,sequence_llm_emb[:data['protein'].x.shape[0]]),dim=1)
 data['protein'].x = protein_x
+
 
 import random
 random.seed(42)
@@ -264,7 +265,7 @@ transform = T.RandomLinkSplit(
     num_val=0.1,
     num_test=0.2,
     is_undirected=True,
-    disjoint_train_ratio=0.2,
+    disjoint_train_ratio=0.0,
     neg_sampling_ratio=2.0,
     add_negative_train_samples=True,
     edge_types=("drug", "interaction", "protein"),
@@ -293,10 +294,10 @@ test_edge_x, test_y = test_edge_x.cpu(), test_y.cpu()
 rf_model = RandomForestClassifier()
 
 # 定义模型参数
-hidden_channels = 64
+hidden_channels = 128
 out_channels = 1
-num_heads = 1
-num_layers = 2
+num_heads = 4
+num_layers = args.n_layers
 
 
 # 初始化模型
@@ -323,8 +324,8 @@ for edge_idx in train_edge_indices:
 # 将边特征列表转换为张量
 edge_x = torch.stack(train_edge_x_list, dim=0)
 
-# train_edge_x_final = torch.cat((edge_x,torch.tensor(train_edge_x).to(device)),dim=1).detach().to('cpu')
-train_edge_x_final = edge_x.detach().to('cpu')
+train_edge_x_final = torch.cat((edge_x,torch.tensor(train_edge_x).to(device)),dim=1).detach().to('cpu')
+
 # 测试模型
 test_x_dict = test(model, test_data, device)
 
@@ -337,25 +338,64 @@ for edge_idx in test_edge_indices:
 # 将边特征列表转换为张量
 con_edge_x = torch.stack(test_edge_x_list, dim=0)
 
-# test_edge_x_final = torch.cat((con_edge_x,torch.tensor(test_edge_x).to(device)),dim=1).detach().to('cpu')
-test_edge_x_final = con_edge_x.detach().to('cpu')
+test_edge_x_final = torch.cat((con_edge_x,torch.tensor(test_edge_x).to(device)),dim=1).detach().to('cpu')
+
 acc_list,auc_list, pre_list = [],[],[]
+time_list = []
 run_time = 5
 
 for i in range(run_time):
-    init_time = time.time()
+    
     for epoch in range(1,401):  # 假设训练10个epoch 1001->101
         loss = train(model, train_data, optimizer, device)
         if epoch % 50 == 0:
-            print(f'Epoch: {epoch+1}, Loss: {loss:.4f}')
+            print(f'Epoch: {epoch+1}, Train Loss: {loss:.4f}')
 
+    # 测试模型
+    train_x_dict = test(model, train_data, device)
+
+    # train_edge_x_list = []
+    # # 遍历所有边的索引
+    # for edge_idx in train_edge_indices:
+    #     # 从test_data中提取边的特征并拼接
+    #     edge_idx_x = torch.cat((train_x_dict['drug'][edge_idx[0]], train_x_dict['protein'][edge_idx[1]]), dim=0)
+    #     train_edge_x_list.append(edge_idx_x)
+    # # 将边特征列表转换为张量
+    # edge_x = torch.stack(train_edge_x_list, dim=0)
+
+    # train_edge_x_final = torch.cat((edge_x,torch.tensor(train_edge_x).to(device)),dim=1).detach().to('cpu')
+
+    init_time = time.time()
     rf_model.fit(train_edge_x_final, train_y)
     end_time = time.time()
-    print(f"Elapsed time {(end_time-init_time)/60:.4f} min")
+
+    # print(f"Elapsed Training time {(end_time-init_time)/60:.4f} min")
+    time_list.append(end_time-init_time)
+
+    # 测试模型
+    test_x_dict = test(model, test_data, device)
+
+    # test_edge_x_list = []
+    # # 遍历所有边的索引
+    # for edge_idx in test_edge_indices:
+    #     # 从test_data中提取边的特征并拼接
+    #     edge_idx_x = torch.cat((test_x_dict['drug'][edge_idx[0]], test_x_dict['protein'][edge_idx[1]]), dim=0)
+    #     test_edge_x_list.append(edge_idx_x)
+    # # 将边特征列表转换为张量
+    # con_edge_x = torch.stack(test_edge_x_list, dim=0)
+
+    # test_edge_x_final = torch.cat((con_edge_x,torch.tensor(test_edge_x).to(device)),dim=1).detach().to('cpu')
+
+
+    init_time = time.time()
 
     # 进行预测
     y_pred_proba = rf_model.predict_proba(test_edge_x_final)[:, 1]
     y_pred = rf_model.predict(test_edge_x_final)
+    end_time = time.time()
+
+    # print(f"Elapsed Inference time {(end_time-init_time)/60:.4f} min")
+    time_list.append(end_time-init_time)
 
     # 计算AUC
     auc = roc_auc_score(test_y, y_pred_proba)
@@ -375,7 +415,7 @@ for i in range(run_time):
     pre_list.append(precision)
 
 
-print(f'avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' avg Test AUC: {sum(auc_list)/len(auc_list):.4f}', f' avg Test PRE: {sum(pre_list)/len(pre_list):.4f}')
+print(f'avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' avg Test AUC: {sum(auc_list)/len(auc_list):.4f}', f' avg Test PRE: {sum(pre_list)/len(pre_list):.4f}', f'avg Time:{sum(time_list)/len(time_list):.4f}')
 
 
 

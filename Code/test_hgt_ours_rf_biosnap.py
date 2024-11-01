@@ -237,7 +237,7 @@ def data_divide(data):
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 path = 'Data/BIOSNAP/hetero_data_biosnap.pt'
-data = torch.load(path)
+data = torch.load(path,map_location=device)
 data = T.ToUndirected()(data)
 smile_llm_emb = torch.load('Data/BIOSNAP/exp_smile_llm_emb.pt',map_location=device)
 sequence_llm_emb = torch.load('Data/BIOSNAP/exp_sequence_llm_emb.pt',map_location=device)
@@ -294,9 +294,9 @@ test_edge_x, test_y = test_edge_x.cpu(), test_y.cpu()
 rf_model = RandomForestClassifier()
 
 # 定义模型参数
-hidden_channels = 128
+hidden_channels = 64
 out_channels = 1
-num_heads = 4
+num_heads = 2
 num_layers = 2
 
 
@@ -309,36 +309,36 @@ print('model:',model)
 # test_x_hgt_emb = model(test_data)
 
 # 定义优化器
-optimizer = Adam(model.parameters(), lr=0.05)
+optimizer = Adam(model.parameters(), lr=0.01)
 
 
-# # 测试模型
-# train_x_dict = test(model, train_data, device)
+# 测试模型
+train_x_dict = test(model, train_data, device)
 
-# train_edge_x_list = []
-# # 遍历所有边的索引
-# for edge_idx in train_edge_indices:
-#     # 从test_data中提取边的特征并拼接
-#     edge_idx_x = torch.cat((train_x_dict['drug'][edge_idx[0]], train_x_dict['protein'][edge_idx[1]]), dim=0)
-#     train_edge_x_list.append(edge_idx_x)
-# # 将边特征列表转换为张量
-# edge_x = torch.stack(train_edge_x_list, dim=0)
+train_edge_x_list = []
+# 遍历所有边的索引
+for edge_idx in train_edge_indices:
+    # 从test_data中提取边的特征并拼接
+    edge_idx_x = torch.cat((train_x_dict['drug'][edge_idx[0]], train_x_dict['protein'][edge_idx[1]]), dim=0)
+    train_edge_x_list.append(edge_idx_x)
+# 将边特征列表转换为张量
+edge_x = torch.stack(train_edge_x_list, dim=0)
 
-# train_edge_x_final = torch.cat((edge_x,torch.tensor(train_edge_x).to(device)),dim=1).detach().to('cpu')
+train_edge_x_final = torch.cat((edge_x,torch.tensor(train_edge_x).to(device)),dim=1).detach().to('cpu')
 
-# # 测试模型
-# test_x_dict = test(model, test_data, device)
+# 测试模型
+test_x_dict = test(model, test_data, device)
 
-# test_edge_x_list = []
-# # 遍历所有边的索引
-# for edge_idx in test_edge_indices:
-#     # 从test_data中提取边的特征并拼接
-#     edge_idx_x = torch.cat((test_x_dict['drug'][edge_idx[0]], test_x_dict['protein'][edge_idx[1]]), dim=0)
-#     test_edge_x_list.append(edge_idx_x)
-# # 将边特征列表转换为张量
-# con_edge_x = torch.stack(test_edge_x_list, dim=0)
+test_edge_x_list = []
+# 遍历所有边的索引
+for edge_idx in test_edge_indices:
+    # 从test_data中提取边的特征并拼接
+    edge_idx_x = torch.cat((test_x_dict['drug'][edge_idx[0]], test_x_dict['protein'][edge_idx[1]]), dim=0)
+    test_edge_x_list.append(edge_idx_x)
+# 将边特征列表转换为张量
+con_edge_x = torch.stack(test_edge_x_list, dim=0)
 
-# test_edge_x_final = torch.cat((con_edge_x,torch.tensor(test_edge_x).to(device)),dim=1).detach().to('cpu')
+test_edge_x_final = torch.cat((con_edge_x,torch.tensor(test_edge_x).to(device)),dim=1).detach().to('cpu')
 
 acc_list,auc_list, pre_list = [],[],[]
 time_list = []
@@ -354,16 +354,16 @@ for i in range(run_time):
     # 测试模型
     train_x_dict = test(model, train_data, device)
 
-    train_edge_x_list = []
-    # 遍历所有边的索引
-    for edge_idx in train_edge_indices:
-        # 从test_data中提取边的特征并拼接
-        edge_idx_x = torch.cat((train_x_dict['drug'][edge_idx[0]], train_x_dict['protein'][edge_idx[1]]), dim=0)
-        train_edge_x_list.append(edge_idx_x)
-    # 将边特征列表转换为张量
-    edge_x = torch.stack(train_edge_x_list, dim=0)
+    # train_edge_x_list = []
+    # # 遍历所有边的索引
+    # for edge_idx in train_edge_indices:
+    #     # 从test_data中提取边的特征并拼接
+    #     edge_idx_x = torch.cat((train_x_dict['drug'][edge_idx[0]], train_x_dict['protein'][edge_idx[1]]), dim=0)
+    #     train_edge_x_list.append(edge_idx_x)
+    # # 将边特征列表转换为张量
+    # edge_x = torch.stack(train_edge_x_list, dim=0)
 
-    train_edge_x_final = torch.cat((edge_x,torch.tensor(train_edge_x).to(device)),dim=1).detach().to('cpu')
+    # train_edge_x_final = torch.cat((edge_x,torch.tensor(train_edge_x).to(device)),dim=1).detach().to('cpu')
 
     init_time = time.time()
     rf_model.fit(train_edge_x_final, train_y)
@@ -375,16 +375,16 @@ for i in range(run_time):
     # 测试模型
     test_x_dict = test(model, test_data, device)
 
-    test_edge_x_list = []
-    # 遍历所有边的索引
-    for edge_idx in test_edge_indices:
-        # 从test_data中提取边的特征并拼接
-        edge_idx_x = torch.cat((test_x_dict['drug'][edge_idx[0]], test_x_dict['protein'][edge_idx[1]]), dim=0)
-        test_edge_x_list.append(edge_idx_x)
-    # 将边特征列表转换为张量
-    con_edge_x = torch.stack(test_edge_x_list, dim=0)
+    # test_edge_x_list = []
+    # # 遍历所有边的索引
+    # for edge_idx in test_edge_indices:
+    #     # 从test_data中提取边的特征并拼接
+    #     edge_idx_x = torch.cat((test_x_dict['drug'][edge_idx[0]], test_x_dict['protein'][edge_idx[1]]), dim=0)
+    #     test_edge_x_list.append(edge_idx_x)
+    # # 将边特征列表转换为张量
+    # con_edge_x = torch.stack(test_edge_x_list, dim=0)
 
-    test_edge_x_final = torch.cat((con_edge_x,torch.tensor(test_edge_x).to(device)),dim=1).detach().to('cpu')
+    # test_edge_x_final = torch.cat((con_edge_x,torch.tensor(test_edge_x).to(device)),dim=1).detach().to('cpu')
 
 
     init_time = time.time()

@@ -82,8 +82,10 @@ def model_run(args):
                                             pro_name=test_pro_name,
                                             inter_name=test_inter_name)
 
+
+
     # ********************************* create model *********************************
-    protein_len=10
+    protein_len=128
     if (args.dataset_name == "Human"):
         protein_len = 23
     elif (args.dataset_name == "Davis"):
@@ -92,7 +94,7 @@ def model_run(args):
         protein_len = 21
     elif (args.dataset_name == "BINDINGDB"):
         protein_len = 41
-
+    
     torch.manual_seed(2)
     model = MCLDTI(depth_e1=args.depth_e1,
                    depth_e2=args.depth_e2,
@@ -106,7 +108,7 @@ def model_run(args):
 
     # ********************************* training *********************************
     lr, lr_decay, weight_decay = map(float, [1e-3, args.lr_decay, 1e-8])
-
+    print('model:\n',model)
     trainer = Train_model(model, lr, weight_decay)
 
     print("开始训练....")
@@ -156,6 +158,7 @@ def val(args, file_model, val_loader):
     valer = Tester(model)
     Loss, y_label, y_pred, y_score = [], [], [], []
     for i, data_list in enumerate(val_loader):
+
         loss, correct_labels, predicted_labels, predicted_scores, _, _ = valer.test(data_list)
         Loss.append(loss)
         for c_l in correct_labels:
@@ -236,7 +239,7 @@ def test(args, file_model, test_dataset, test_loader, file_AUCs_test):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset_name', type=str, default="Davis")
-    parser.add_argument('--batch_size', type=int, default=128)
+    parser.add_argument('--batch_size', type=int, default=512)
     parser.add_argument('--img_size', type=int, default=256)
     parser.add_argument('--k', type=int, default=1)
     parser.add_argument('--backbone', type=str, default="CNN")
@@ -254,7 +257,7 @@ if __name__ == '__main__':
     parser.add_argument('--depth_decoder', type=int, default=1)
 
     parser.add_argument('--lr_decay', type=float, default=0.85)
-    parser.add_argument('--drop_ratio', type=float, default=0.)
+    parser.add_argument('--drop_ratio', type=float, default=0.5)
     parser.add_argument('--epochs', type=int, default=100)
     # parser.add_argument("--device", default='cuda:0')
     parser.add_argument("--device", default='cpu')

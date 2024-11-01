@@ -22,9 +22,11 @@ class Dataset(torch.utils.data.Dataset):
     def __getitem__(self, item):
         # print('item:',item)
         # print(len(self.label))
-        while len(self.label) <= item:
-            self.label.append(0)
+        # while len(self.label) <= item:
+        #     self.label.append(0)
         # print(len(self.label))
+        # item = item if item < len(self.label) else item-len(self.label)
+        item = item if item < 128 else 128
         img_path = self.imgs[item]
         smiles_feature = self.smiles[item]
         pro_feature = self.proteins[item]

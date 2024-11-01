@@ -172,6 +172,8 @@ def train(model, data, optimizer, device):
                     #    ('protein','rev_interaction','drug'): data[('protein','rev_interaction','drug')].edge_label_index.to(device)}
     # 清零梯度
     optimizer.zero_grad()
+
+    # x_dict, edge_index_dict, edge_label_index_dict, labels = node2edge(data,device)
     
     # 前向传播
     x_dict, output = model(x_dict, edge_index_dict,edge_label_index_dict)
@@ -194,7 +196,7 @@ def test(model, data, device):
                     #    ('protein','rev_interaction','drug'): data[('protein','rev_interaction','drug')].edge_index.to(device)}
     labels = data[('drug','interaction','protein')].edge_label.to(device)
     edge_label_index_dict = {('drug','interaction','protein'): data[('drug','interaction','protein')].edge_label_index.to(device) }
-
+    # x_dict, edge_index_dict, edge_label_index_dict, labels = node2edge(data,device)
     # 前向传播
     with torch.no_grad():
         x_dict, output = model(x_dict, edge_index_dict, edge_label_index_dict)
@@ -209,6 +211,18 @@ def test(model, data, device):
     # precision = average_precision_score(labels.cpu(), output.cpu())
 
     # return accuracy, auc, precision
+
+
+# def node2edge(data,device):
+#     # 获取测试数据
+#     x_dict = {'drug': data['drug'].x.to(device), 'protein': data['protein'].x.to(device)}
+#     edge_index_dict = {('drug','interaction','protein'): data[('drug','interaction','protein')].edge_index.to(device)}
+#                     #    ('protein','rev_interaction','drug'): data[('protein','rev_interaction','drug')].edge_index.to(device)}
+#     labels = data[('drug','interaction','protein')].edge_label.to(device)
+#     edge_label_index_dict = {('drug','interaction','protein'): data[('drug','interaction','protein')].edge_label_index.to(device) }
+
+#     return x_dict, edge_index_dict, edge_label_index_dict, labels
+
 
 def data_divide(data):
     labels = data[('drug','interaction','protein')].edge_label.to(device)
@@ -236,29 +250,54 @@ def data_divide(data):
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-path = 'Data/BIOSNAP/hetero_data_biosnap.pt'
-data = torch.load(path,map_location=torch.device('cpu'))
+path = 'Data/BINDINGDB/hetero_data_bindingdb.pt'
+data = torch.load(path,map_location=device)
 data = T.ToUndirected()(data)
+# smile_llm_emb = torch.load('Data/BINDINGDB/exp_smile_llm_emb.pt',map_location=device)
+# sequence_llm_emb = torch.load('Data/BINDINGDB/exp_sequence_llm_emb.pt',map_location=device)
+# print('='*100)
+# print('data:', data)
+# print('='*100)
+# print('smile llm emb:',smile_llm_emb.shape)
+# print('suquence llm emb:',sequence_llm_emb.shape)
 
-smile_llm_emb = torch.load('Data/BIOSNAP/exp_smile_llm_emb.pt',map_location=device)
-sequence_llm_emb = torch.load('Data/BIOSNAP/exp_sequence_llm_emb.pt',map_location=device)
-print('='*100)
-print('data:', data)
-print('='*100)
-print('smile llm emb:',smile_llm_emb.shape)
-print('suquence llm emb:',sequence_llm_emb.shape)
+from sklearn.decomposition import PCA
+
+def apply_pca(input_tensor, n_components=64):
+    """
+    Apply PCA to reduce the dimensionality of the input tensor.
+
+    Args:
+        input_tensor (np.ndarray): The input tensor of shape (n_samples, n_features).
+        n_components (int): The number of components to keep after PCA.
+
+    Returns:
+        np.ndarray: The transformed tensor with reduced dimensions.
+    """
+    # Ensure the input is a 2D array
+    if input_tensor.ndim != 2:
+        raise ValueError("Input tensor must be 2D (n_samples, n_features)")
+
+    # Create a PCA instance
+    pca = PCA(n_components=n_components)
+
+    # Fit PCA on the input tensor and transform it
+    reduced_tensor = torch.tensor(pca.fit_transform(input_tensor)).long()
+
+    return reduced_tensor
+
+# smile_llm_emb = apply_pca(smile_llm_emb.cpu(), n_components=64).to(device)
+
+# drug_x = torch.cat((data['drug'].x,smile_llm_emb[:data['drug'].x.shape[0]]),dim=1)
+# data['drug'].x = drug_x
 
 
-drug_x = torch.cat((data['drug'].x,smile_llm_emb[:data['drug'].x.shape[0]]),dim=1)
-data['drug'].x = drug_x
-
-
-protein_x = torch.cat((data['protein'].x,sequence_llm_emb[:data['protein'].x.shape[0]]),dim=1)
-data['protein'].x = protein_x
+# protein_x = torch.cat((data['protein'].x,sequence_llm_emb[:data['protein'].x.shape[0]]),dim=1)
+# data['protein'].x = protein_x
 
 import random
-random.seed(42)
-torch.manual_seed(42)
+# random.seed(42)
+# torch.manual_seed(42)
 # del data['protein', 'rev_interaction', 'drug'].edge_label 
 transform = T.RandomLinkSplit(
     num_val=0.1,
@@ -293,10 +332,10 @@ test_edge_x, test_y = test_edge_x.cpu(), test_y.cpu()
 rf_model = RandomForestClassifier()
 
 # 定义模型参数
-hidden_channels = 64
+hidden_channels = args.n_hid
 out_channels = 1
-num_heads = 1
-num_layers = 2
+num_heads = 4
+num_layers = 4
 
 
 # 初始化模型
@@ -308,8 +347,7 @@ print('model:',model)
 # test_x_hgt_emb = model(test_data)
 
 # 定义优化器
-optimizer = Adam(model.parameters(), lr=0.01)
-
+optimizer = Adam(model.parameters(), lr=0.05)
 
 # 测试模型
 train_x_dict = test(model, train_data, device)
@@ -323,8 +361,8 @@ for edge_idx in train_edge_indices:
 # 将边特征列表转换为张量
 edge_x = torch.stack(train_edge_x_list, dim=0)
 
-# train_edge_x_final = torch.cat((edge_x,torch.tensor(train_edge_x).to(device)),dim=1).detach().to('cpu')
-train_edge_x_final = edge_x.detach().to('cpu')
+train_edge_x_final = torch.cat((edge_x,torch.tensor(train_edge_x).to(device)),dim=1).detach().to('cpu')
+
 # 测试模型
 test_x_dict = test(model, test_data, device)
 
@@ -337,21 +375,25 @@ for edge_idx in test_edge_indices:
 # 将边特征列表转换为张量
 con_edge_x = torch.stack(test_edge_x_list, dim=0)
 
-# test_edge_x_final = torch.cat((con_edge_x,torch.tensor(test_edge_x).to(device)),dim=1).detach().to('cpu')
-test_edge_x_final = con_edge_x.detach().to('cpu')
+test_edge_x_final = torch.cat((con_edge_x,torch.tensor(test_edge_x).to(device)),dim=1).detach().to('cpu')
+
+
 acc_list,auc_list, pre_list = [],[],[]
+time_list =[]
 run_time = 5
 
 for i in range(run_time):
-    init_time = time.time()
+    
     for epoch in range(1,401):  # 假设训练10个epoch 1001->101
         loss = train(model, train_data, optimizer, device)
         if epoch % 50 == 0:
             print(f'Epoch: {epoch+1}, Loss: {loss:.4f}')
-
+    
+    init_time = time.time()
     rf_model.fit(train_edge_x_final, train_y)
     end_time = time.time()
     print(f"Elapsed time {(end_time-init_time)/60:.4f} min")
+    time_list.append((end_time-init_time))
 
     # 进行预测
     y_pred_proba = rf_model.predict_proba(test_edge_x_final)[:, 1]
@@ -375,7 +417,79 @@ for i in range(run_time):
     pre_list.append(precision)
 
 
-print(f'avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' avg Test AUC: {sum(auc_list)/len(auc_list):.4f}', f' avg Test PRE: {sum(pre_list)/len(pre_list):.4f}')
+print(f'avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' avg Test AUC: {sum(auc_list)/len(auc_list):.4f}', f' avg Test PRE: {sum(pre_list)/len(pre_list):.4f}', f'avg Time:{sum(time_list)/len(time_list):.4f}')
+
+
+
+
+# # 测试模型
+# train_x_dict = test(model, train_data, device)
+
+# train_edge_x_list = []
+# # 遍历所有边的索引
+# for edge_idx in train_edge_indices:
+#     # 从test_data中提取边的特征并拼接
+#     edge_idx_x = torch.cat((train_x_dict['drug'][edge_idx[0]], train_x_dict['protein'][edge_idx[1]]), dim=0)
+#     train_edge_x_list.append(edge_idx_x)
+# # 将边特征列表转换为张量
+# edge_x = torch.stack(train_edge_x_list, dim=0)
+
+# train_edge_x_final = torch.cat((edge_x,torch.tensor(train_edge_x).to(device)),dim=1).detach().to('cpu')
+
+# # 测试模型
+# test_x_dict = test(model, test_data, device)
+
+# test_edge_x_list = []
+# # 遍历所有边的索引
+# for edge_idx in test_edge_indices:
+#     # 从test_data中提取边的特征并拼接
+#     edge_idx_x = torch.cat((test_x_dict['drug'][edge_idx[0]], test_x_dict['protein'][edge_idx[1]]), dim=0)
+#     test_edge_x_list.append(edge_idx_x)
+# # 将边特征列表转换为张量
+# con_edge_x = torch.stack(test_edge_x_list, dim=0)
+
+# test_edge_x_final = torch.cat((con_edge_x,torch.tensor(test_edge_x).to(device)),dim=1).detach().to('cpu')
+
+
+# acc_list,auc_list, pre_list = [],[],[]
+# time_list =[]
+# run_time = 10
+
+# for i in range(run_time):
+#     init_time = time.time()
+#     for epoch in range(1,1001):  # 假设训练10个epoch 1001->101
+#         loss = train(model, train_data, optimizer, device)
+#         if epoch % 50 == 0:
+#             print(f'Epoch: {epoch+1}, Loss: {loss:.4f}')
+
+#     rf_model.fit(train_edge_x_final, train_y)
+#     end_time = time.time()
+#     print(f"Elapsed time {(end_time-init_time)/60:.4f} min")
+#     time_list.append((end_time-init_time))
+
+#     # 进行预测
+#     y_pred_proba = rf_model.predict_proba(test_edge_x_final)[:, 1]
+#     y_pred = rf_model.predict(test_edge_x_final)
+
+#     # 计算AUC
+#     auc = roc_auc_score(test_y, y_pred_proba)
+#     auc_list.append(auc)
+
+#     # 计算Precision
+#     precision = precision_score(test_y, y_pred)
+#     pre_list.append(precision)
+
+#     # 计算Accuracy
+#     accuracy = accuracy_score(test_y, y_pred)
+#     acc_list.append(accuracy)
+
+
+#     acc_list.append(accuracy)
+#     auc_list.append(auc)
+#     pre_list.append(precision)
+
+
+# print(f'avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' avg Test AUC: {sum(auc_list)/len(auc_list):.4f}', f' avg Test PRE: {sum(pre_list)/len(pre_list):.4f}', f'avg Time:{sum(time_list)/len(time_list):.4f}')
 
 
 

@@ -340,6 +340,11 @@ class MCLDTI(nn.Module):
 
     def forward(self, inputs):
         image, smile, protein = inputs[0], inputs[1], inputs[2]
+        print('image size:',image.shape)
+        print('smile size:',smile.shape)
+        print('protein size:',protein.shape)
+        print('*'*100)
+        
         image = image.to(device)
         smile = smile.to(device)
         protein = protein.to(device)
@@ -360,8 +365,8 @@ class MCLDTI(nn.Module):
 
     def __call__(self, data, train=True):
         inputs, correct_interaction, = data[:-1], data[-1]
-        print('correct_interaction:',correct_interaction,torch.max(correct_interaction),torch.sum(correct_interaction))
-        print('*'*100)
+        # print('correct_interaction:',correct_interaction,torch.max(correct_interaction),torch.sum(correct_interaction))
+        # print('*'*100)
         predicted_interaction, rate1, rate2 = self.forward(inputs)
         correct_interaction = torch.squeeze(correct_interaction)
         loss = F.cross_entropy(predicted_interaction, correct_interaction.to(device))

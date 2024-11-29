@@ -16,7 +16,8 @@ def model_run(args):
     ISOTIMEFORMAT = '%Y_%m%d_%H%M'
     run_time = datetime.now().strftime(ISOTIMEFORMAT)
 
-    device = torch.device(args.device if torch.cuda.is_available() else "cpu")
+    # device = torch.device(args.device if torch.cuda.is_available() else "cpu")
+    device = 'cpu'
 
     print(f"数据集：{args.dataset_name} 运行时间: {run_time}")
 
@@ -48,7 +49,10 @@ def model_run(args):
                                               imgs=train_image,
                                               smile_name=train_smile_name,
                                               pro_name=train_pro_name,
-                                              inter_name=train_inter_name)
+                                            #   inter_name=train_inter_name,
+                                              path=args.datapath,
+                                              device=device,
+                                              mode='train')
 
     # ********************************* Val_dataset *********************************
     val_img_path = "../../Data/" + args.dataset_name + "/val/" + "Img_" + str(args.img_size) + "_" + str(
@@ -64,7 +68,10 @@ def model_run(args):
                                           imgs=val_image,
                                           smile_name=val_smile_name,
                                           pro_name=val_pro_name,
-                                          inter_name=val_inter_name)
+                                        #   inter_name=val_inter_name,
+                                          path=args.datapath,
+                                          device=device,
+                                          mode='val')
 
     # ********************************* Test_dataset *********************************
     test_img_path = "../../Data/" + args.dataset_name + "/test/" + "Img_" + str(args.img_size) + "_" + str(
@@ -80,7 +87,10 @@ def model_run(args):
                                             imgs=test_image,
                                             smile_name=test_smile_name,
                                             pro_name=test_pro_name,
-                                            inter_name=test_inter_name)
+                                            # inter_name=test_inter_name,
+                                            path=args.datapath,
+                                            device=device,
+                                            mode='test')
 
 
 
@@ -169,6 +179,7 @@ def val(args, file_model, val_loader):
             y_score.append(p_s)
 
     loss_val = sum(Loss) / len(val_loader)
+    print('y_score:',len(y_score),sum(y_score),max(y_score),min(y_score))
     AUC_val = roc_auc_score(y_label, y_score)
     fpr, tpr, thresholds = roc_curve(y_label, y_score)
 
@@ -261,6 +272,8 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', type=int, default=100)
     # parser.add_argument("--device", default='cuda:0')
     parser.add_argument("--device", default='cpu')
+    parser.add_argument("--datapath",default='../../Data/BIOSNAP/hetero_data_biosnap.pt')
+    
     opt = parser.parse_args()
 
     import psutil

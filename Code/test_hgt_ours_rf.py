@@ -235,6 +235,10 @@ def data_divide(data):
 
     return edge_x, labels, edge_indices
 
+import psutil
+
+process = psutil.Process()
+print("Memory usage before:", process.memory_info().rss)  # 以字节为单位
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -341,67 +345,85 @@ train_edge_x_final = torch.cat((edge_x,torch.tensor(train_edge_x).to(device)),di
 # 测试模型
 test_x_dict = test(model, test_data, device)
 
-test_edge_x_list = []
-# 遍历所有边的索引
-for edge_idx in test_edge_indices:
-    # 从test_data中提取边的特征并拼接
-    edge_idx_x = torch.cat((test_x_dict['drug'][edge_idx[0]], test_x_dict['protein'][edge_idx[1]]), dim=0)
-    test_edge_x_list.append(edge_idx_x)
-# 将边特征列表转换为张量
-con_edge_x = torch.stack(test_edge_x_list, dim=0)
+print('test_x_dict:',test_x_dict['drug'].shape,test_x_dict['protein'].shape)
+torch.save(test_x_dict['drug'],'drugbank_test_x_drug_emb.pt')
+torch.save(test_x_dict['protein'],'drugbank_test_x_protein_emb.pt')
 
-test_edge_x_final = torch.cat((con_edge_x,torch.tensor(test_edge_x).to(device)),dim=1).detach().to('cpu')
+# test_edge_x_list = []
+# # 遍历所有边的索引
+# for edge_idx in test_edge_indices:
+#     # 从test_data中提取边的特征并拼接
+#     edge_idx_x = torch.cat((test_x_dict['drug'][edge_idx[0]], test_x_dict['protein'][edge_idx[1]]), dim=0)
+#     test_edge_x_list.append(edge_idx_x)
+# # 将边特征列表转换为张量
+# con_edge_x = torch.stack(test_edge_x_list, dim=0)
 
+# test_edge_x_final = torch.cat((con_edge_x,torch.tensor(test_edge_x).to(device)),dim=1).detach().to('cpu')
 
-for i in range(run_time):
-    # 训练模型
-    init_time = time.time()
-    for epoch in range(1,101):  # 假设训练10个epoch 1001->101
-        loss = train(model, train_data, optimizer, device)
-        if epoch % 10 == 0:
-            print(f'Epoch: {epoch+1}, Loss: {loss:.4f}')
+# print('test_edge_x_final:',test_edge_x_final.shape)
+# torch.save(test_edge_x_final,'drugbank_test_edge_x_final_emb.pt')
 
-    
+# print('test_edge_x:',test_edge_x.shape)
+# torch.save(test_edge_x,'drugbank_test_edge_x_emb.pt')
 
-    rf_model.fit(train_edge_x_final, train_y)
-    
-
+# print('test y:',test_y.shape)
+# torch.save(test_y,'drugbank_test_y.pt')
 
 
-    # 进行预测
-    y_pred_proba = rf_model.predict_proba(test_edge_x_final)[:, 1]
-    y_pred = rf_model.predict(test_edge_x_final)
-
-    end_time = time.time()
-    print(f"Elapsed time {(end_time-init_time):.4f} seconds")
-
-    time_list.append(end_time-init_time)
-
-    ### 这里的时间指的是包括training+test两部分的时间
 
 
-    print('test data and predicted data:\n')
-    # 计算AUC
-    auc = roc_auc_score(test_y, y_pred_proba)
-    # print('-------------------auc:',auc)
-    auc_list.append(auc)
 
-    # 计算Precision
-    precision = precision_score(test_y, y_pred)
-    # print('-------------------pre:',precision)
-    pre_list.append(precision)
-
-    # 计算Accuracy
-    accuracy = accuracy_score(test_y, y_pred)
-    # print('-------------------acc:',accuracy)
-    acc_list.append(accuracy)
+# for i in range(run_time):
+#     # 训练模型
+#     init_time = time.time()
+#     for epoch in range(1,101):  # 假设训练10个epoch 1001->101
+#         loss = train(model, train_data, optimizer, device)
+#         if epoch % 10 == 0:
+#             print(f'Epoch: {epoch+1}, Loss: {loss:.4f}')
 
     
 
+#     rf_model.fit(train_edge_x_final, train_y)
+    
 
-print(f'avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' avg Test AUC: {sum(auc_list)/len(auc_list):.4f}', f' avg Test PRE: {sum(pre_list)/len(pre_list):.4f}', f'avg Time:{sum(time_list)/len(time_list):.4f}')
 
 
+#     # 进行预测
+#     y_pred_proba = rf_model.predict_proba(test_edge_x_final)[:, 1]
+#     y_pred = rf_model.predict(test_edge_x_final)
+
+#     end_time = time.time()
+#     print(f"Elapsed time {(end_time-init_time):.4f} seconds")
+
+#     time_list.append(end_time-init_time)
+
+#     ### 这里的时间指的是包括training+test两部分的时间
+
+
+#     print('test data and predicted data:\n')
+#     # 计算AUC
+#     auc = roc_auc_score(test_y, y_pred_proba)
+#     # print('-------------------auc:',auc)
+#     auc_list.append(auc)
+
+#     # 计算Precision
+#     precision = precision_score(test_y, y_pred)
+#     # print('-------------------pre:',precision)
+#     pre_list.append(precision)
+
+#     # 计算Accuracy
+#     accuracy = accuracy_score(test_y, y_pred)
+#     # print('-------------------acc:',accuracy)
+#     acc_list.append(accuracy)
+
+    
+
+
+# print(f'avg Test Accuracy: {sum(acc_list)/len(acc_list):.4f}',f' avg Test AUC: {sum(auc_list)/len(auc_list):.4f}', f' avg Test PRE: {sum(pre_list)/len(pre_list):.4f}', f'avg Time:{sum(time_list)/len(time_list):.4f}')
+
+
+
+# print("Memory usage after:", process.memory_info().rss)
 
 
 

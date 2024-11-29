@@ -14,7 +14,7 @@ dict_protfam, dict_enz, dict_drugfamcols = return_colordic()
 DPI = 400
 ########
 
-FOLDER_ANNOT = '/home/ad/mgao/GeNNius/Data/Annotation'
+FOLDER_ANNOT = '/home/shawn/min/GeNNius/Data/Annotation'
 
 df_annots_drugs = pd.read_pickle(os.path.join(FOLDER_ANNOT, 'df_annots_drugs.pkl'))
 df_annots_prots = pd.read_pickle(os.path.join(FOLDER_ANNOT, 'df_annots_prots.pkl'))
